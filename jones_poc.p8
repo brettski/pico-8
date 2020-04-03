@@ -19,8 +19,8 @@ function _draw()
 	cls(12)
 	map()
  rect(24,24,103,103,1)
- draw_mouse()
  draw_doors()
+ draw_mouse()
  print("cpu:"..stat(1)..":"..stat(2),0,122,0)
 end
 
@@ -107,42 +107,52 @@ function draw_doors()
  end
 end
 
+--door entrance loc:
+--0:top,1:right,2:bottom,3:left
 function load_properties()
-	add_prop("luxury appt",
-		0,0,31,23,"2,2")
-	add_prop("rental office",
-	 32,0,63,23,"5,2")
 	add_prop("slums",
-	 64,0,95,23,"9,2")
+	 64,0,95,23,"9,2,2")
+	add_prop("luxury appt",
+		0,0,31,23,"2,2,2")
+	add_prop("rental office",
+	 32,0,63,23,"5,2,2")
 	add_prop("mart",
-	 96,0,127,23,"13,2")
+	 96,0,127,23,"13,2,2")
 	add_prop("factory",
-	 0,104,31,127,"1,15")
+	 0,104,31,127,"1,15,0")
 	add_prop("jobs r us",
-	 32,104,63,127,"5,14")
+	 32,104,63,127,"5,14,2")
 	add_prop("hi-u-squared",
-	 64,104,95,127,"10,15")
+	 64,104,95,127,"10,15,0")
 	add_prop("e-bits",
-	 96,104,127,127,"13,14")
+	 96,104,127,127,"13,14,2")
 	add_prop("black's",
-	 0,40,31,63,"3,6")
+	 0,40,31,63,"3,6,1")
 	add_prop("bank",
-	 0,80,31,103,"3,11")
+	 0,80,31,103,"3,11,1")
 	add_prop("burger time",
-	 96,40,127,63,"14,6")
+	 96,40,127,63,"14,6,1")
 	add_prop("q's cloths",
-	 96,80,127,103,"14,11")
+	 96,80,127,103,"14,11,1")
 end
 -->8
 --players
 
-function add_pl(
-
+function add_pl(name,
+ c_loc
+	
 )
-
+ local pl={
+  name=name,
+  c_loc=c_loc,
+  d_loc=nil, --destination loc
+  direction=1, --clockwise
+ }
 end
 
-
+function init_player()
+add_pl("p1",props[1]
+end
 
 -->8
 --utils
