@@ -7,8 +7,9 @@ __lua__
 function _init()
 	poke(0x5f2d,1) --enable mouse
 	props={}
-	pls={}
+	plr={}
 	load_properties()
+	init_player()
 end
 
 function _update60()
@@ -20,6 +21,7 @@ function _draw()
 	map()
  rect(24,24,103,103,1)
  draw_doors()
+ draw_player()
  draw_mouse()
  print("cpu:"..stat(1)..":"..stat(2),0,122,0)
 end
@@ -57,7 +59,7 @@ end
 function add_prop(
 	name,
 	x1,y1,x2,y2,
-	door
+	door,tidx
 )
 	local pp={
 	 name=name,
@@ -66,6 +68,7 @@ function add_prop(
 		x2=x2, --property low-right
 		y2=y2,
 		door=split2int(door),
+		tidx=tidx, --travel index
 		items={}, --things sold
 		jobs={},
 	}
@@ -111,47 +114,66 @@ end
 --0:top,1:right,2:bottom,3:left
 function load_properties()
 	add_prop("slums",
-	 64,0,95,23,"9,2,2")
+	 64,0,95,23,"9,2,2",1)
 	add_prop("luxury appt",
-		0,0,31,23,"2,2,2")
+		0,0,31,23,"2,2,2",11)
 	add_prop("rental office",
-	 32,0,63,23,"5,2,2")
+	 32,0,63,23,"5,2,2",12)
 	add_prop("mart",
-	 96,0,127,23,"13,2,2")
+	 96,0,127,23,"13,2,2",2)
 	add_prop("factory",
-	 0,104,31,127,"1,15,0")
+	 0,104,31,127,"1,15,0",8)
 	add_prop("jobs r us",
-	 32,104,63,127,"5,14,2")
+	 32,104,63,127,"5,14,2",7)
 	add_prop("hi-u-squared",
-	 64,104,95,127,"10,15,0")
+	 64,104,95,127,"10,15,0",6)
 	add_prop("e-bits",
-	 96,104,127,127,"13,14,2")
+	 96,104,127,127,"13,14,2",5)
 	add_prop("black's",
-	 0,40,31,63,"3,6,1")
+	 0,40,31,63,"3,6,1",10)
 	add_prop("bank",
-	 0,80,31,103,"3,11,1")
+	 0,80,31,103,"3,11,1",9)
 	add_prop("burger time",
-	 96,40,127,63,"14,6,1")
+	 96,40,127,63,"14,6,1",3)
 	add_prop("q's cloths",
-	 96,80,127,103,"14,11,1")
+	 96,80,127,103,"14,11,1",4)
 end
 -->8
 --players
 
 function add_pl(name,
- c_loc
+ c_loc,
+ sprite
 	
 )
  local pl={
   name=name,
   c_loc=c_loc,
   d_loc=nil, --destination loc
-  direction=1, --clockwise
+  direction=1, --1:cw,0:ccw
+  sprite=sprite,
+  money=200,
+  salary=0,
+  apt_type=1, --1:slum,11:lux
+  apt_rent=250,
  }
+ add(plr,pl)
 end
 
 function init_player()
-add_pl("p1",props[1]
+add_pl("p1",props[1],16
+)
+end
+
+function draw_player()
+ local pl=plr[1]
+ --print(pl.c_loc.door, 0, 32, 0)
+ local door=pl.c_loc.door
+	spr(pl.sprite,door[1]*8,
+	 door[2]*8)
+	 --char needs to be
+	 --at offset of door door[3]
+	 --0:up,etc.
 end
 
 -->8
