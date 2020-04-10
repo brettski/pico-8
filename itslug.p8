@@ -28,9 +28,16 @@ function _draw()
 end
 
 function startgame()
+ buttonbuf=-1
  plr_x=3
  plr_y=3
+ plr_ox=0
+ plr_oy=0
+ plr_sox=0
+ plr_soy=0
  plr_flp=false
+ plr_mov=nil
+ plr_t=0
  
  loadlevel(0)
 end
@@ -60,9 +67,54 @@ end
 --updates
 
 function updategame()
+ --dobutton(getbutton())
  
+ dobuttonbuf()
+ dobutton(buttonbuf)
+ buttonbuf=-1
 end
 
+function dobuttonbuf()
+ if buttonbuf==-1 then
+  buttonbuf=getbutton()
+ end
+end
+
+function getbutton()
+	for i=0,5 do
+	 if btnp(i) then
+	  return i
+	 end
+	end
+	return -1
+end
+
+function dobutton(butt)
+ if butt<0 then return end
+ if butt<4 then
+  moveplayer(dirx[butt+1],diry[butt+1])
+  --plr_x+=dirx[butt+1]
+  --plr_y+=diry[butt+1]
+ end
+ --menu buttons here 🅾️❎
+ --🅾️ swich modes
+ --❎ select
+end
+
+function update_plrturn()
+ dobuttonbuf()
+ plr_t=min(plr_t+0.125,1)
+
+ plr_mov()
+ if plr_t==1 then
+  _upd=updategame
+ end
+end
+
+function movwalk()
+ plr_ox=plr_sox*(1-plr_t)
+ plr_oy=plr_soy*(1-plr_t)
+end
 
 -->8
 --draws
@@ -70,13 +122,12 @@ end
 function drawgame()
  cls(0)
  map()
- drawspr(plrani,plr_x*8,plr_y*8)
- drawspr(waterc,14*8,4*8,15)
+ drawspr(plr_ani,plr_x*8+plr_ox,plr_y*8+plr_oy,dfltani_spd,plr_flp)
+ drawspr(waterc,14*8,4*8,28,false)
  dodeskani()
 end
 
 function getframe(ani,spd)
- spd = spd or 10
  return ani[flr(t/spd)%#ani+1]
 end
 
@@ -84,13 +135,15 @@ function dodeskani()
  for i=1,#deskani do
   drawspr(deskani[i],
    deskanix[i],
-   deskaniy[i])
+   deskaniy[i],
+   dfltani_spd,
+   false)
  end
 end
 
-function drawspr(_sprts,_x,_y,spd)
+function drawspr(_sprts,_x,_y,spd,flp)
  palt(0,false)
- spr(getframe(_sprts,spd),_x,_y)
+ spr(getframe(_sprts,spd),_x,_y,1,1,flp)
  pal()
 end
 
@@ -110,14 +163,42 @@ end
 
 -- init animation data
 function initanidata()
- plrani={16,17,18,19}
+ dfltani_spd=10
+ plr_ani={16,17,18,19}
  waterc={49,50,51,52}
  deskani={}
  deskanix={}
  deskaniy={}
 end
 -->8
---
+--gameplay
+
+function moveplayer(_dx,_dy)
+ local destx,desty=
+  plr_x+_dx,plr_y+_dy
+ local tile=mget(destx,desty)
+ 
+ if _dx<0 then 
+ 	plr_flp=true 
+ elseif _dx>0 then
+ --keep same if 0
+  plr_flp=false
+ end
+ 
+ --todo check for desk first
+ if fget(tile,0) then --solid
+  return
+  --todo add bump
+ else --ok to walk
+  plr_x+=_dx
+  plr_y+=_dy
+  plr_sox,plr_soy=-_dx*8,-_dy*8
+  plr_ox,plr_oy=plr_sox,plr_soy
+  plr_t=0
+  _upd=update_plrturn
+  plr_mov=movwalk
+ end
+end
 __gfx__
 00000000777777770000000000000000000000000000000004444400004444400000000000000000000000000000000000000000000000000000000000000000
 00000000700000070000000000000000000000000000000004aaa400004ffff00000000000000000000000000000000000000000000000000000000000000000
