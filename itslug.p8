@@ -101,7 +101,7 @@ function dobutton(butt)
   --plr_x+=dirx[butt+1]
   --plr_y+=diry[butt+1]
  elseif butt==4 then -- 🅾️
-  switch_mode()
+  -- change to startmenu()
  --menu buttons here 🅾️❎
  --🅾️ switch modes
  --❎ select
@@ -123,17 +123,6 @@ function movwalk()
  plr_oy=plr_soy*(1-plr_t)
 end
 
---cursor mode
-function update_cursor()
- local bn=getbutton()
- if bn==4 then
-  _upd=updategame
-  return
- elseif bn>=0 and bn<4 then
-  movefn=movecursor
-  dobutton(bn)
- end
-end
 -->8
 --drawing
 
@@ -148,10 +137,6 @@ end
 
 function drawplr()
   drawspr(plr_ani,plr_x*8+plr_ox,plr_y*8+plr_oy,dfltani_spd,plr_flp) 
-end
-
-function drawcursor()
- drawspr(cur_ani,cur_x*8,cur_y*8,dfltani_spd,false,true)
 end
 
 function getframe(ani,spd)
@@ -193,7 +178,7 @@ end
 function initanidata()
  dfltani_spd=10
  plr_ani={16,17,18,19}
- cur_ani={20,21}
+ --cur_ani={20,21}
  waterc={49,50,51,52}
  deskani={}
  deskanix={}
@@ -229,18 +214,6 @@ function moveplayer(_dx,_dy)
  end
 end
 
---switch from player mode to 
---cursor mode (or back)
-function switch_mode()
- debug={}
- _upd=update_cursor
- actdrawfn=drawcursor
-end
-
-function movecursor(_dx,_dy)
- cur_x+=_dx
- cur_y+=_dy
-end
 __gfx__
 00000000000000000000000000000000000000000000000004444400004444400000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000004aaa400004ffff00000000000000000000000000000000000000000000000000000000000000000
