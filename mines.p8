@@ -1,5 +1,5 @@
 pico-8 cartridge // http://www.pico-8.com
-version 18
+version 19
 __lua__
 --mines
 --by brettski
@@ -12,10 +12,6 @@ function _init()
  xfield=10   --field x max
  yfield=10   --field y max
  bombcount=10
- bombs={}    --bomb locations
- field={}    --playing field
- ckstack={}
- debug={}
 
  loaddata()
  loadanisets()
@@ -41,6 +37,10 @@ end
 --start and setup
 
 function gamestart()
+ bombs={}    --bomb locations
+ field={}    --playing field
+ ckstack={}
+ debug={}
  plr_x=7
  plr_y=7
  plr_ox=0
@@ -111,11 +111,14 @@ end
 function gamelose()
  for fx=1,xfield do
   for fy=1,yfield do
-   field[getfkey(fx,fy)].state="ucvd"
-   
+   local f=field[getfkey(fx,fy)]
+   if f.state!="flg" then 
+    f.state="ucvd"
+   end
   end
  end
- print("lose")
+ --_upd=some-type-of-menu
+ _drw=drawgameover
 end
 
 function gamewin()
@@ -155,6 +158,8 @@ function updfcover()
   --    ","..fp.val..","..fp.state)
   if fp.val<0 then
    _upd=gamelose
+  elseif fp.state=="flg" then
+   --do nothing
   elseif fp.val>0 then
    fp.state="ucvd"
   elseif fp.val==0 and
@@ -196,10 +201,13 @@ function drawplr()
   plr_x*8,plr_y*8,12,true)
 end
 
-function drawfcover()
+function drawfcover(trsflg)
+ trsflg=trsflg or false
  for k,v in pairs(field) do
   if v.state=="flg" then
+   palt(6,trsflg)
    spr(36,v.tx*8,v.ty*8)
+   palt()
   elseif v.state=="cvd" then
    spr(32,v.tx*8,v.ty*8)
   end
@@ -215,6 +223,13 @@ function drawdebug()
  if t%30==0 then
   del(debug,debug[1])
  end
+end
+
+function drawgameover()
+ cls()
+ map()
+ drawfcover(true)
+ print ("game over", 18,18,2)
 end
 -->8
 --utils
