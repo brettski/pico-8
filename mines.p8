@@ -1,5 +1,5 @@
 pico-8 cartridge // http://www.pico-8.com
-version 19
+version 20
 __lua__
 --mines
 --by brettski
@@ -275,7 +275,10 @@ function addckstack(_x,_y)
      ax>xfield or ay>yfield then
   	--do nothing
   else
-   add(ckstack,getfkey(ax,ay))
+   local fstate=field[getfkey(ax,ay)].state
+   if fstate == "cvd" then
+    add(ckstack,getfkey(ax,ay))
+   end
   end
  end
 end
