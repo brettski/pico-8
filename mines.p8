@@ -13,6 +13,7 @@ function _init()
  yfield=10   --field y max
  bombcount=10
 
+ addpicomenu()
  loaddata()
  loadanisets()
  gamestart()
@@ -104,6 +105,11 @@ function generatefield()
  
 end
 
+--adds menu(s) to pico-8
+function addpicomenu()
+ menuitem(1, "new game",
+  function() gamestart() end)
+end
 -->8
 --updates
 
