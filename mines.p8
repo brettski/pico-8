@@ -1,5 +1,5 @@
 pico-8 cartridge // http://www.pico-8.com
-version 20
+version 21
 __lua__
 --mines
 --by brettski
@@ -29,6 +29,7 @@ end
 function _draw()
 
 	_drw()
+	drawindow()
 	drawdebug()
 end
 
@@ -40,6 +41,7 @@ function gamestart()
  bombs={}    --bomb locations
  field={}    --playing field
  ckstack={}
+ windows={}
  debug={}
  plr_x=7
  plr_y=7
@@ -231,6 +233,34 @@ function drawgameover()
  drawfcover(true)
  print ("game over", 18,18,2)
 end
+
+function drawindow()
+ for w in all(windows) do
+  local wx,wy,ww,wh=w.x,w.y,w.w,w.h
+  rectfill(wx,wy,wx+ww-1,wy+wh-1,10)
+  rect(wx+1,wy+1,wx+ww-2,wy+wh-2,11)
+  
+  wx+=4
+  wy+=4
+  clip(wx,wy,ww-4,wh-4)
+  for txt in all(w.txt) do
+   print(txt,wx,wy,5)
+   wy+=6
+  end
+  clip() 
+  if w.dur then
+   w.dur-=1
+   if w.dur<=0 then
+    local dif=w.h/2
+    w.y+=dif/2
+    w.h-=dif
+    if w.h<3 then
+     del(windows,w)
+    end
+   end
+  end
+ end
+end
 -->8
 --utils
 
@@ -348,6 +378,25 @@ function loadanisets()
  fieldtls={16,17,18,19,20,
            21,22,23,24,25}
  plr_ani={1,2,3,4}
+end
+-->8
+--ui
+
+function addwindow(_x,_y,_w,_h,_txt)
+ local w={
+  x=_x,
+  y=_y,
+  w=_w,
+  h=_h,
+  txt=_txt,
+ }
+ add(windows,w)
+ return w
+end
+
+function showmsg(msg,dur)
+ local w=addwindow(8,8,47,13,{msg})
+ w.dur=dur or 120
 end
 __gfx__
 00000000770000770777000000077000000007700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
