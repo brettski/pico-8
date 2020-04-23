@@ -16,8 +16,6 @@ function _init()
  loaddata()
  loadanisets()
  gamestart()
- _upd=updategame
- _drw=drawgame
 end
 
 function _update60()
@@ -29,6 +27,7 @@ end
 function _draw()
 
 	_drw()
+	drawhead()
 	drawindow()
 	drawdebug()
 end
@@ -53,9 +52,11 @@ function gamestart()
  plr_t=0
  xoff,yoff=0,0
  flgcount=bombcount
+ covered=xfield*yfield
  
  generatefield()
-  
+ _upd=updategame
+ _drw=drawgame
 end
 
 function generatefield()
@@ -232,17 +233,26 @@ function drawgameover()
  map()
  drawfcover(true)
  print ("game over", 18,18,2)
+ --showmsg("game over :(", 100)
+ --gamestart()
+end
+
+function drawgamewin()
+ cls()
+ map()
+ --showmsg("you win!!",100)
+ --gamestart()
 end
 
 function drawindow()
  for w in all(windows) do
   local wx,wy,ww,wh=w.x,w.y,w.w,w.h
-  rectfill(wx,wy,wx+ww-1,wy+wh-1,10)
-  rect(wx+1,wy+1,wx+ww-2,wy+wh-2,11)
+  rectfill(wx,wy,wx+ww-1,wy+wh-1,9)
+  rect(wx+1,wy+1,wx+ww-2,wy+wh-2,12)
   
-  wx+=4
+  wx+=3
   wy+=4
-  clip(wx,wy,ww-4,wh-4)
+  clip(wx,wy,ww-6,wh-4)
   for txt in all(w.txt) do
    print(txt,wx,wy,5)
    wy+=6
@@ -260,6 +270,10 @@ function drawindow()
    end
   end
  end
+end
+
+function drawhead()
+ print("flags:"..flgcount,8,1,11)
 end
 -->8
 --utils
@@ -328,10 +342,12 @@ function doflag()
                  plr_y-yoff)]
 
  local ste=fp.state
- if ste=="cvd" then
+ if ste=="cvd" and flgcount>0 then
   fp.state="flg"
+  flgcount-=1
  elseif ste=="flg" then
   fp.state="cvd"
+  flgcount+=1
  end
 end
 
@@ -342,10 +358,28 @@ function doselect()
           plr_y-yoff))
  
  _upd=updfcover
-
 end
 
-
+--check if all bombs flagged
+--and nothing is covered
+function checkforwin()
+ local done=true
+ if flgcount==0 and 
+    covered <10 then
+  for fx=1,xfield do
+   for fy=1,yfield do
+    if field[getfkey(fx,fy)].state=="cvd" then
+     done=false
+     break
+    end
+    if not done then break end
+   end
+  end
+  if done then
+   
+  end
+ end --if flgcount
+end
 --[[
 thought is
 take current push to check stack
@@ -395,7 +429,7 @@ function addwindow(_x,_y,_w,_h,_txt)
 end
 
 function showmsg(msg,dur)
- local w=addwindow(8,8,47,13,{msg})
+ local w=addwindow(8,8,112,13,{msg})
  w.dur=dur or 120
 end
 __gfx__
