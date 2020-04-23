@@ -161,26 +161,27 @@ end
 function updfcover()
  --add(debug,"stk:"..#ckstack)
  if #ckstack > 0 then
-  local fkey=ckstack[1]
-  local fp=field[fkey]
-  --add(debug,"fkey:"..fkey..
-  --    ","..fp.val..","..fp.state)
-  if fp.val<0 then
-   _upd=gamelose
-  elseif fp.state=="flg" then
-   --do nothing
-  elseif fp.val>0 then
-   fp.state="ucvd"
-  elseif fp.val==0 and
-      fp.state=="cvd" then
-   fp.state="ucvd"
-   addckstack(fp.x,fp.y)
-  end
-  del(ckstack,fkey)
+  for i=1,#ckstack do
+   local fkey=ckstack[1]
+   local fp=field[fkey]
+   --add(debug,"fkey:"..fkey..
+   --    ","..fp.val..","..fp.state)
+   if fp.val<0 then
+    _upd=gamelose
+   elseif fp.state=="flg" then
+    --do nothing
+   elseif fp.val>0 then
+    fp.state="ucvd"
+   elseif fp.val==0 and
+    fp.state=="cvd" then
+    fp.state="ucvd"
+    addckstack(fp.x,fp.y)
+   end
+   del(ckstack,fkey)
+  end 
  else
   _upd=updategame
  end
-
 end
 -->8
 --drawing
