@@ -13,36 +13,39 @@ function _init()
 end
 
 function _update()
- angle_d=5
+ local angle_c=5 --change per button press
+ local angle0=angle --current angle
  if btnp(2) then
-  angle+=1
+  angle=angle+angle_c
  end
  if btnp(3) then
-  angle-=1
+  angle=angle-angle_c
  end
- --need to add or remove
- --angle_d number of lines
- --in direction of btnp
- for i=a,a0 do
-  a=angle/360
+ local a0,a1
+ if angle>angle0 then
+  a0,a1=angle0,angle
+ else 
+  a0,a1=angle,angle0
+ end
+ for i=a0,a1 do
+  a=i/360
   l={
    x=x0+cos(a)*len,
    y=y0+sin(a)*len,
    dur=40,
+   c=i==a0 and 0 or 3
   }
   add(lines,l)
- end
+end
 end
 
 function _draw()
  cls(6)
  cursor(1,1,3)
- print("0   is 12 o'clock")
- print("270 is  3 o'clock")
  print("circle drawn clockwise")
- print("drawing 185 to 270")
+ print("a:"..angle)
  for ln in all(lines) do
-  line(x0,y0,ln.x,ln.y,0)
+  line(x0,y0,ln.x,ln.y,ln.c)
   if ln.dur<1 then
    del(lines,ln)
   else
