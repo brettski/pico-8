@@ -19,6 +19,8 @@ function _draw()
  drw_bg()
  --drw_plr()
  drw_cannon()
+ print(canang,1,1)
+ print(cany1,1,7)
 end
 -->8
 --startup
@@ -37,8 +39,12 @@ function startgame()
  plrani={1,2,3,4}
  --cannon
  --14*8=112
- cany0=108
- cany1=108
+ canx0=8 --center x
+ cany0=108 --center y
+ canx1=24 --calculated
+ cany1=108 -- ""
+ canlen=16 --cannon length
+ canang=0 --cannon angle
  --environment
  grvy=0.2
 
@@ -61,14 +67,18 @@ end
 --allows adj and fire
 function upd_cannon()
  local b=getbutton()
- 
  if b==2 then 
-  cany1-=1
+  canang+=1
+ elseif b==3 then 
+  canang-=1
+ elseif b==5 then
+  --❎, fire
  end
- if b==3 then 
-  cany1+=1 
+ if b==2 or b==3 then
+  a=canang/360
+  canx1=canx0+cos(a)*canlen
+  cany1=cany0+sin(a)*canlen
  end
-
 end
 
 --moves player after fire
@@ -98,11 +108,11 @@ function drw_plr()
 end
 
 function drw_cannon()
- line(8,cany0-2,24,cany1-2,6)
- line(8,cany0-1,24,cany1-1,13)
- line(8,cany0,24,cany1,5)
- line(8,cany0+1,24,cany1+1,13)
- line(8,cany0+2,24,cany1+2,6)
+ line(canx0,cany0-2,canx1,cany1-2,6)
+ line(canx0,cany0-1,canx1,cany1-1,13)
+ line(canx0,cany0,canx1,cany1,5)
+ line(canx0,cany0+1,canx1,cany1+1,13)
+ line(canx0,cany0+2,canx1,cany1+2,6)
 end
 
 function drw_showscore()
