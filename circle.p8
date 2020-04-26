@@ -8,12 +8,27 @@ function _init()
  y0=64
  x1=x0+len
  y1=y0
+ angle=0
  lines={}
- for i=185,270 do
-  angle=i/360
+end
+
+function _update()
+ angle_d=5
+ if btnp(2) then
+  angle+=1
+ end
+ if btnp(3) then
+  angle-=1
+ end
+ --need to add or remove
+ --angle_d number of lines
+ --in direction of btnp
+ for i=a,a0 do
+  a=angle/360
   l={
-   x=x0+sin(angle)*len,
-   y=y0+cos(angle)*len,
+   x=x0+cos(a)*len,
+   y=y0+sin(a)*len,
+   dur=40,
   }
   add(lines,l)
  end
@@ -28,6 +43,11 @@ function _draw()
  print("drawing 185 to 270")
  for ln in all(lines) do
   line(x0,y0,ln.x,ln.y,0)
+  if ln.dur<1 then
+   del(lines,ln)
+  else
+   ln.dur-=1
+  end
  end
 end
 -->8
@@ -35,6 +55,7 @@ end
 
 --[[
 https://stackoverflow.com/questions/3810768
+https://www.drdobbs.com/architecture-and-design/fast-bitmap-rotation-and-scaling/184416337
 
 ]]--
 __gfx__
