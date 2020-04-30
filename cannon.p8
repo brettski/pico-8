@@ -22,7 +22,7 @@ function _draw()
  --drw_cannon()
  _drw()
  print(canang,1,1)
- print(metval,1,7)
+ print(canx0,1,7)
 end
 -->8
 --startup
@@ -102,7 +102,7 @@ function upd_cannon()
   isfire=true
   plrx=canx1
   plry=cany1-7
-  mapfg_spd=4
+  mapfg_spd=.1
  end
  if b==2 or b==3 then
   a=canang/360
@@ -115,7 +115,7 @@ function upd_cannon()
   metx0+=mapfg_x
   plrx-=mapfg_x
   plrx=min(plrx,plrxmax)
-  if canx0>=canlen*-1 then
+  if canx0<canlen*-2 then
    _drw=drw_plr
    _upd=upd_game
   end
