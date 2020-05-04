@@ -1,5 +1,5 @@
 pico-8 cartridge // http://www.pico-8.com
-version 22
+version 23
 __lua__
 --cannon
 --brettski
@@ -21,7 +21,7 @@ function _draw()
  --drw_plr()
  --drw_cannon()
  _drw()
- print(canang,1,1)
+ print("plry"..plry,1,1)
  print(canx0,1,7)
 end
 -->8
@@ -31,15 +31,18 @@ function startgame()
  t=0
  --background
  mapfg_x=0 --foreground
- mapfg_spd=0--1
+ mapfg_dx=0--1
  map1_x=0
- map1_spd=0--0.33
+ map1_dx=0--0.33
  --player
- plrxspd=0
- plryspd=0
+ --plrxspd=0
+ --plryspd=0
+ plrdy=1
  plrx,plry=3*8,14*8
  plrxmax=56
  plrani={1,2,3,4}
+ plrbncy=0.9 --bounciness
+ plrdia=8 --diameter
  --cannon
  --14*8=112
  canx0=8 --center x
@@ -59,8 +62,9 @@ function startgame()
  metval=1 --1 to metw-1
  metdir=1 --1 or -1 direction
  --environment
- grvy=0.2
+ gvty=1.5
  drag=0.1
+ grnd=0.8 --ground drag
  
  --gameloops
  _drw=drw_cannon
@@ -70,15 +74,14 @@ end
 --updates
 
 function upd_bg()
- mapfg_x-=mapfg_spd
+ mapfg_x-=mapfg_dx
  if mapfg_x<-127 then
   mapfg_x=0
  end
- map1_x-=map1_spd
+ map1_x-=map1_dx
  if map1_x<-127 then
   map1_x=0
  end
-
 end
 
 --allows adj and fire
@@ -102,7 +105,7 @@ function upd_cannon()
   isfire=true
   plrx=canx1
   plry=cany1-7
-  mapfg_spd=.1
+  mapfg_dx=.1
  end
  if b==2 or b==3 then
   a=canang/360
@@ -124,6 +127,17 @@ end
 
 --moves player after fire
 function upd_game()
+ plrdy+=gvty
+
+ plry+=plrdy
+ if plry>119-plrdia then
+  plrdy*=-1*plrbncy
+  mapfg_dx*=grnd
+ end
+ plry=min(plry,112)
+
+ mapfg_dx-=drag
+ mapfg_dx=max(mapfg_dx,0)
 
 end
 
