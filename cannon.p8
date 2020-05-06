@@ -24,7 +24,7 @@ function _draw()
  print("plry:"..plry,1,1)
  print("mval:"..mfire,1,7)
  --print("x1,y1,a:"..canx1..","..cany1..","..canang,1,17)
- print("mapfg_x:"..mapfg_x,1,13)
+ print("plrdst:"..plrdst,1,13)
 end
 -->8
 --startup
@@ -45,6 +45,7 @@ function startgame()
  plrani={1,2,3,4}
  plrbncy=0.8 --bounciness
  plrdia=8 --diameter
+ plrdst=0 --distance
  --cannon
  --14*8=112
  canx0=8 --center x
@@ -78,6 +79,7 @@ end
 
 function upd_bg()
  mapfg_x-=mapfg_dx
+ plrdst+=mapfg_dx
  if mapfg_x<-127 then
   mapfg_x=0
  end
@@ -109,7 +111,7 @@ function upd_cannon()
   mfire=metval
   plrx=canx1
   plry=cany1-7
-  mapfg_dx,plrxy=firecan(canang,metval)
+  mapfg_dx,plrdy=firecan(canang,mfire)
  end
  if (b==2 or b==3)
   and not isfire then
