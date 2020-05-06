@@ -82,7 +82,7 @@ end
 
 function upd_bg()
  mapfg_x-=mapfg_dx
- plrdst+=mapfg_dx
+ plrdst+=flr(mapfg_dx/8)
  if mapfg_x<-127 then
   mapfg_x=0
  end
@@ -218,8 +218,8 @@ end
 --adds items to field,randomly
 function additem()
 
- local mi=flr(rnd(20)+1)
- if(t%mi==0) then
+ local mi=flr(rnd(4)+1)
+ if(plrdst%mi==0) then
   local it={
    snum=64,
    shit=66,
