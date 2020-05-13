@@ -1,5 +1,5 @@
 pico-8 cartridge // http://www.pico-8.com
-version 24
+version 27
 __lua__
 --cannon
 --brettski
@@ -69,9 +69,9 @@ function startgame()
  metdir=1 --1 or -1 direction
  mfire=1
  --environment
- gvty=1.5
+ gvty=0.6
  drag=0.1
- grnd=0.8 --ground drag
+ grnd=0.9 --ground drag
  --items
  items={}
  itemy=113
@@ -217,8 +217,8 @@ function getbutton()
 end
 
 function firecan(ang,val)
- local x=val*cos(ang/360)*5
- local y=val*sin(ang/360)*5
+ local x=val*cos(ang/360)
+ local y=val*sin(ang/360)
  print(x..":"..y)
  return x,y
 end
