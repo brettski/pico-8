@@ -50,18 +50,19 @@ function draw_analog()
  line(clk_cntrx, clk_cntry-40,
   clk_cntrx, clk_cntry-42,8)
  line(clk_cntrx, clk_cntry,
-  sechand.x,sechand.y,sechand.col)
+  hrhand.x,hrhand.y,hrhand.col)
  line(clk_cntrx, clk_cntry,
   minhand.x,minhand.y,minhand.col)
  line(clk_cntrx, clk_cntry,
-  hrhand.x,hrhand.y,hrhand.col)
+  sechand.x,sechand.y,sechand.col)
+ circfill(clk_cntrx,clk_cntry,1,13)
 end
 
 function update_analog()
  --(360/60)*v = angle
  sechand.a=sechand.af(60,t.second)
  minhand.a=minhand.af(60,t.minute)
- hrhand.a=hrhand.af(24,t.hour)
+ hrhand.a=hrhand.af(12,flr(t.hour-12))
  set_hand(sechand)
  set_hand(minhand)
  set_hand(hrhand)
@@ -75,6 +76,7 @@ function set_hand(hand)
 end
 
 function get_hand_a(d,v)
+ v=v-15 --zero is at 3:00,adjust
  return ((360/d)*v)/360
 end
 
