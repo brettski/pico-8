@@ -1,5 +1,5 @@
 pico-8 cartridge // http://www.pico-8.com
-version 27
+version 29
 __lua__
 --mines
 --by brettski
@@ -44,13 +44,13 @@ function gamestart()
  windows={}
  debug={}
  plr_x,plr_y=getrandpoint(xfield,yfield)
- plr_ox=0
- plr_oy=0
- plr_sox=0
- plr_soy=0
+ plr_ox=0    --unknown
+ plr_oy=0    --unknown
+ plr_sox=0   --unknown
+ plr_soy=0   --unknown
  plr_mov=nil
  plr_t=0
- xoff,yoff=0,0
+ xoff,yoff=1,1
  flgcount=bombcount
  covered=xfield*yfield
  
