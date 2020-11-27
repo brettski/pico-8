@@ -6,10 +6,6 @@ __lua__
 
 function _init()
 	t=0
-	mset(0,0,26)--remove
-	mset(2,0,26)
-	mset(0,0,26)--remove
-	mset(0,2,26)
 	loaddata()
  setinitvars()	
 	
@@ -32,7 +28,7 @@ end
 
 function setinitvars()
 	gfieldx=0 --x game field end
-	gfieldy=0 --x logic only no draw offset
+	gfieldy=0 --logic only no draw offset
 	glevel=4  --game level
 	bombcount=0
 	flgcount=0
@@ -60,12 +56,14 @@ function gamestart()
 	gfdrawx=gfieldx+xoff --tile max
 	gfdrawy=gfieldy+yoff
 	bombcount=lvl.b
-	flgcount=bombcount
-	plr_x,plr_y=getrandpoint(
+ flgcount=bombcount
+ --plr move position
+	plr_mx,plr_my=getrandpoint(
 	 cbox_tx1,cbox_ty1,
 	 cbox_tx,cbox_ty
  )
- add(debug,plr_x..","..plr_y) 
+ --plr select position
+	plr_sx,plr_sy=plr_mx,plr_my
 	
 	generatefield()
 	_upd=updategame
@@ -177,7 +175,7 @@ end
 --check if all bombs flagged
 --and nothing is covered
 function updchk4win()
- add(debug,"check4")
+ add(debug,"check4win")
  local done=true
  if flgcount==0 then
   add(debug,"flg 0")
@@ -196,6 +194,19 @@ function updchk4win()
    gamewin()
   end
  end --if flgcount
+ _upd=updategame
+end
+
+function gamelose()
+ for fx=1,gfieldx do
+  for fy=1,gfieldy do
+   local f=field[getfkey(fx,fy)]
+   if f.state!="flg" then 
+    f.state="ucvd"
+   end
+  end
+ end
+ _drw=drawgameover
  _upd=updategame
 end
 
@@ -237,10 +248,25 @@ end
 
 function drawplr()
  drawspr(plr_ani,
-  plr_x*8,plr_y*8,8,true)
+  plr_mx*8,plr_my*8,8,true)
 end
 
---debug stuff
+function drawheader()
+ rect(0,0,127,15,13)
+ --print(cbox_x..","..cbox_y..","..cbox_x1..","..cbox_y1,
+ print(plr_mx..","..plr_my..","..plr_sx..","..plr_sy,
+  2,2,3)
+end
+
+function drawgameover()
+ cls()
+ map()
+ drawfcover(true)
+ print ("game over", 18,18,2)
+ drawplr()
+end
+
+--debug stuff--
 function drawdebug()
  cursor(1,16)
  color(9)
@@ -257,41 +283,51 @@ function camerabox()
 	     cbox_x1,cbox_y1,2)
 end
 
-function drawheader()
- rect(0,0,127,15,13)
-end
 
 -->8
 --gameplay
 
 function moveplr(_x,_y)
- local newx=plr_x+_x
- local newy=plr_y+_y
+ local newx=plr_mx+_x
+ local newy=plr_my+_y
  if newx >= cbox_tx and
     newx <= cbox_tx1 then
- 	plr_x+=_x
+ 	plr_mx+=_x
+ 	plr_sx+=_x
  else 
  	cam_x+=_x*8
+ 	plr_sx+=_x
  end
  if newy >= cbox_ty and 
     newy <= cbox_ty1 then
-  plr_y+=_y
+  plr_my+=_y
+  plr_sy+=_y
  else
   cam_y+=_y*8
+  plr_sy+=_y
  end
- 
+ plr_sx=min(plr_sx,gfdrawx)
+ plr_sy=min(plr_sy,gfdrawy)
+ plr_sx=max(plr_sx,xoff+1)
+ plr_sy=max(plr_sy,yoff+1)
  --x camera & move control
  --fieled - 2 tiles - box width
- local maxcamx=gfdrawx*8-56-(cbox_x1-cbox_x)
  if cam_x <= 0 then
   cam_x=0
   cbox_tx=xoff+1
   cbox_x=cbox_tx*8 --val debug only
- elseif cam_x >= maxcamx then
- 	cam_x=maxcamx
  else
   cbox_x=dcbox_x
   cbox_tx=cbox_x/8
+ end
+ local maxcamx=gfdrawx*8-56-(dcbox_x1-dcbox_x)
+ if cam_x >= maxcamx then
+ 	cam_x=maxcamx
+ 	cbox_x1=gfdrawx*8-maxcamx
+  cbox_tx1=cbox_x1/8
+ else
+  cbox_x1=dcbox_x1
+  cbox_tx1=cbox_x1/8
  end
  
  --y camera & move control
@@ -303,17 +339,22 @@ function moveplr(_x,_y)
   cbox_y=dcbox_y
   cbox_ty=cbox_y/8
  end
- local maxcamy=gfdrawy*8-56-(cbox_y1-cbox_y)
+ local maxcamy=gfdrawy*8-56-(dcbox_y1-dcbox_y)
  if cam_y >= maxcamy then
  	cam_y=maxcamy
+ 	cbox_y1=gfdrawy*8-maxcamy
+  cbox_ty1=cbox_y1/8
+ else
+  cbox_y1=dcbox_y1
+  cbox_ty1=cbox_y1/8
  end
  
 end
 
 function doflag()
  local fp=field[getfkey(
-                 plr_x-xoff,
-                 plr_y-yoff)]
+                 plr_sx-xoff,
+                 plr_sy-yoff)]
 
  if fp.state=="cvd" and flgcount>0 then
   fp.state="flg"
@@ -326,8 +367,8 @@ end
 
 function doselect()
  add(ckstack,
-  getfkey(plr_x-xoff,
-          plr_y-yoff))
+  getfkey(plr_sx-xoff,
+          plr_sy-yoff))
  
  _upd=updfcover
 end
