@@ -7,13 +7,11 @@ __lua__
 function _init()
 	t=0
 	mset(0,0,26)--remove
-	mset(1,0,26)
 	mset(2,0,26)
 	mset(0,0,26)--remove
-	mset(0,1,26)
 	mset(0,2,26)
- setinitvars()	
 	loaddata()
+ setinitvars()	
 	
 	gamestart()
 end
@@ -24,8 +22,10 @@ function _update()
 end
 
 function _draw()
+	camera(cam_x,cam_y)
  _drw()
  drawdebug()
+ camerabox()
 end
 -->8
 --startup and setup
@@ -33,11 +33,20 @@ end
 function setinitvars()
 	gfieldx=0 --x game field end
 	gfieldy=0 --x logic only no draw offset
-	glevel=1  --game level
+	glevel=4  --game level
 	bombcount=0
-	flgcount=bombcount
+	flgcount=0
 	xoff,yoff=0,1 --offset for border
-
+ cxoff,cxoff=xoff*8,yoff*8
+ cam_x,cam_y=0,0 --camera xy
+ cbox_x=dcbox_x --camera box
+ cbox_y=dcbox_y
+ cbox_x1=dcbox_x1
+ cbox_y1=dcbox_y1
+ cbox_tx=cbox_x/8 --tile/map values
+ cbox_tx1=cbox_x1/8
+ cbox_ty=cbox_y/8
+ cbox_ty1=cbox_y1/8
 end
 
 function gamestart()
@@ -46,12 +55,15 @@ function gamestart()
 	ckstack={} --tiles to check
 	debug={}
 	local lvl=glevels[glevel]
-	gfieldx=lvl.x
+	gfieldx=lvl.x --logic max
 	gfieldy=lvl.y
+	gfdrawx=gfieldx+xoff --tile max
+	gfdrawy=gfieldy+yoff
 	bombcount=lvl.b
+	flgcount=bombcount
 	plr_x,plr_y=getrandpoint(
-		gfieldx+xoff,
-		gfieldy+yoff
+	 cbox_tx1,cbox_ty1,
+	 cbox_tx,cbox_ty
  )
  add(debug,plr_x..","..plr_y) 
 	
@@ -103,6 +115,8 @@ function generatefield()
  end
  
 end --gen field
+
+
 -->8
 --updates
 
@@ -156,8 +170,33 @@ function updfcover()
    del(ckstack,fkey)
   end 
  else
-  --_upd=updchk4win
+  _upd=updchk4win
  end
+end
+
+--check if all bombs flagged
+--and nothing is covered
+function updchk4win()
+ add(debug,"check4")
+ local done=true
+ if flgcount==0 then
+  add(debug,"flg 0")
+  for fx=1,gfieldx do
+   for fy=1,gfieldy do
+    if field[getfkey(fx,fy)].state=="cvd" then
+     add(debug,"cvd found")
+     done=false
+     break
+    end
+    if not done then break end
+   end
+  end
+  if done then
+   add(debug,"win")
+   gamewin()
+  end
+ end --if flgcount
+ _upd=updategame
 end
 
 -->8
@@ -166,26 +205,109 @@ end
 function drawgame()
  cls()
  map()
+ drawfcover()
+ camera(0,0)
+ drawplr()
+ drawheader()
 end
 
+function drawfcover(trsflg)
+ trsflg=trsflg or false
+ for k,v in pairs(field) do
+  if v.state=="flg" then
+   palt(6,trsflg)
+   spr(48,v.tx*8,v.ty*8)
+   palt()
+  elseif v.state=="cvd" then
+   spr(32,v.tx*8,v.ty*8)
+  end
+ end
+end
+
+function drawspr(_sprts,
+         _x,_y,spd,trnsp)
+ trnsp=trnsp or false
+ palt(0,trnsp)
+ spr(getframe(_sprts,spd),_x,_y)
+end
+
+function getframe(ani,spd)
+ return ani[flr(t/spd)%#ani+1]
+end
+
+function drawplr()
+ drawspr(plr_ani,
+  plr_x*8,plr_y*8,8,true)
+end
+
+--debug stuff
 function drawdebug()
  cursor(1,16)
  color(9)
  for txt in all(debug) do
   print(txt)
  end
- if t%30==0 then
+ if t%40==0 then
   del(debug,debug[1])
  end
 end
 
+function camerabox()
+	rect(cbox_x,cbox_y,
+	     cbox_x1,cbox_y1,2)
+end
+
+function drawheader()
+ rect(0,0,127,15,13)
+end
 
 -->8
 --gameplay
 
 function moveplr(_x,_y)
- plr_x+=_x
- plr_y+=_y
+ local newx=plr_x+_x
+ local newy=plr_y+_y
+ if newx >= cbox_tx and
+    newx <= cbox_tx1 then
+ 	plr_x+=_x
+ else 
+ 	cam_x+=_x*8
+ end
+ if newy >= cbox_ty and 
+    newy <= cbox_ty1 then
+  plr_y+=_y
+ else
+  cam_y+=_y*8
+ end
+ 
+ --x camera & move control
+ --fieled - 2 tiles - box width
+ local maxcamx=gfdrawx*8-56-(cbox_x1-cbox_x)
+ if cam_x <= 0 then
+  cam_x=0
+  cbox_tx=xoff+1
+  cbox_x=cbox_tx*8 --val debug only
+ elseif cam_x >= maxcamx then
+ 	cam_x=maxcamx
+ else
+  cbox_x=dcbox_x
+  cbox_tx=cbox_x/8
+ end
+ 
+ --y camera & move control
+ if cam_y <= 0 then
+  cam_y=0
+  cbox_ty=yoff+1
+  cbox_y=cbox_ty*8 --val debug only
+ else
+  cbox_y=dcbox_y
+  cbox_ty=cbox_y/8
+ end
+ local maxcamy=gfdrawy*8-56-(cbox_y1-cbox_y)
+ if cam_y >= maxcamy then
+ 	cam_y=maxcamy
+ end
+ 
 end
 
 function doflag()
@@ -240,6 +362,12 @@ function loaddata()
  plr_ani={1,2,3,4}
  fcover={32}
  flag={48}
+ --camara box defaults
+ dcbox_x=24
+ dcbox_y=24
+ dcbox_x1=80 
+ dcbox_y1=80
+
 end
 
 -->8
@@ -250,9 +378,12 @@ function getfkey(x,y)
 end
 
 --calc and ret random point
-function getrandpoint(maxx,maxy)
- return flr(rnd(maxx))+1,
-        flr(rnd(maxy))+1
+function getrandpoint(
+	maxx,maxy,minx,miny)
+	minx=minx or 0
+	miny=miny or 0
+ return flr(rnd(maxx-minx))+1+minx,
+        flr(rnd(maxy-miny))+1+miny
 end
 
 --set bomb count around point
@@ -320,11 +451,11 @@ __gfx__
 6ffffffd6404444d6044444d00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 6ffffffd6444444d6044444d00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 6ddddddd6ddddddd6ddddddd00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-66666666000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-66966665000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-664ee865000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-66488865000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-66488665000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-66466665000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-61116665000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-65555555000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+6666666600000000000000000000000000000000000000000000000000000000dddddddd6666666d000000000000000000000000000000000000000000000000
+6696666d00000000000000000000000000000000000000000000000000000000666666666666666d000000000000000000000000000000000000000000000000
+664ee86d00000000000000000000000000000000000000000000000000000000666666666666666d000000000000000000000000000000000000000000000000
+6648886d00000000000000000000000000000000000000000000000000000000666666666666666d000000000000000000000000000000000000000000000000
+6648866d00000000000000000000000000000000000000000000000000000000666666666666666d000000000000000000000000000000000000000000000000
+6646666d00000000000000000000000000000000000000000000000000000000666666666666666d000000000000000000000000000000000000000000000000
+6111666d00000000000000000000000000000000000000000000000000000000666666666666666d000000000000000000000000000000000000000000000000
+6ddddddd00000000000000000000000000000000000000000000000000000000dddddddd6666666d000000000000000000000000000000000000000000000000
