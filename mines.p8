@@ -48,11 +48,11 @@ function gamestart()
  plr_oy=0    --unknown
  plr_sox=0   --unknown
  plr_soy=0   --unknown
- plr_mov=nil
- plr_t=0
+ plr_mov=nil --unknown
+ plr_t=0     --unknown
  xoff,yoff=1,1
  flgcount=bombcount
- covered=xfield*yfield
+ covered=xfield*yfield --unknown
  
  generatefield()
  _upd=updategame

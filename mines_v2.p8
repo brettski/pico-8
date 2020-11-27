@@ -1,0 +1,330 @@
+pico-8 cartridge // http://www.pico-8.com
+version 29
+__lua__
+--mines 2
+--by brettski
+
+function _init()
+	t=0
+	mset(0,0,26)--remove
+	mset(1,0,26)
+	mset(2,0,26)
+	mset(0,0,26)--remove
+	mset(0,1,26)
+	mset(0,2,26)
+ setinitvars()	
+	loaddata()
+	
+	gamestart()
+end
+
+function _update()
+	t+=1
+	_upd()
+end
+
+function _draw()
+ _drw()
+ drawdebug()
+end
+-->8
+--startup and setup
+
+function setinitvars()
+	gfieldx=0 --x game field end
+	gfieldy=0 --x logic only no draw offset
+	glevel=1  --game level
+	bombcount=0
+	flgcount=bombcount
+	xoff,yoff=0,1 --offset for border
+
+end
+
+function gamestart()
+	bombs={}
+	field={}
+	ckstack={} --tiles to check
+	debug={}
+	local lvl=glevels[glevel]
+	gfieldx=lvl.x
+	gfieldy=lvl.y
+	bombcount=lvl.b
+	plr_x,plr_y=getrandpoint(
+		gfieldx+xoff,
+		gfieldy+yoff
+ )
+ add(debug,plr_x..","..plr_y) 
+	
+	generatefield()
+	_upd=updategame
+ _drw=drawgame
+end
+
+function generatefield()
+	--set bomb locations
+	for i=1,bombcount do
+		local isuniq=false
+		local bx,by=0,0
+		while not isuniq do
+			bx,by=getrandpoint(gfieldx,gfieldy)
+			if not bombs[getfkey(bx,by)] then --not a dup
+				isuniq=true
+			end
+		end
+		bombs[getfkey(bx,by)]=-1
+	end
+	--setup field init val and bombs
+	for fx=1,gfieldx do
+		for fy=1,gfieldy do
+		local fkey=getfkey(fx,fy)
+			field[fkey]={
+				x=fx, --logicical loc
+				y=fy,
+				tx=fx+xoff, --tile loc
+				ty=fy+yoff,
+				val=bombs[fkey] or 0,
+				state="cvd", --cvd,ncvd,flg
+			}
+	 end
+ end
+ --set bomb counts
+ for fx=1,gfieldx do
+ 	for fy=1,gfieldy do
+ 	 setbombcnt(fx,fy)
+ 	end
+ end
+ --set field tiles to map
+ for fx=1,gfieldx do
+ 	for fy=1,gfieldy do
+ 		local ft=field[getfkey(fx,fy)]
+ 		mset(ft.tx,ft.ty,
+ 			fieldtils[ft.val+2])
+ 	end
+ end
+ 
+end --gen field
+-->8
+--updates
+
+function updategame()
+	dobutton(getbutton())
+end
+
+function getbutton()
+ for i=0,5 do
+  if btnp(i) then
+   return i
+  end
+ end
+ return -1
+end
+
+function dobutton(butt)
+ if butt<0 then return end
+ if butt<4 then
+  --⬅️➡️⬆️⬇️
+  moveplr(movx[butt+1],movy[butt+1])
+ elseif butt==4 then
+  --🅾️ set flag
+  doflag()
+ elseif butt==5 then
+  --❎ remove barrier
+  doselect()
+ 
+ end
+end
+
+function updfcover()
+ --add(debug,"stk:"..#ckstack)
+ if #ckstack > 0 then
+  for i=1,#ckstack do
+   local fkey=ckstack[1]
+   local fp=field[fkey]
+   --add(debug,"fkey:"..fkey..
+   --    ","..fp.val..","..fp.state)
+   if fp.val<0 then
+    _upd=gamelose
+   elseif fp.state=="flg" then
+    --do nothing
+   elseif fp.val>0 then
+    fp.state="ucvd"
+   elseif fp.val==0 and
+    fp.state=="cvd" then
+    fp.state="ucvd"
+    addckstack(fp.x,fp.y)
+   end
+   del(ckstack,fkey)
+  end 
+ else
+  --_upd=updchk4win
+ end
+end
+
+-->8
+--draws
+
+function drawgame()
+ cls()
+ map()
+end
+
+function drawdebug()
+ cursor(1,16)
+ color(9)
+ for txt in all(debug) do
+  print(txt)
+ end
+ if t%30==0 then
+  del(debug,debug[1])
+ end
+end
+
+
+-->8
+--gameplay
+
+function moveplr(_x,_y)
+ plr_x+=_x
+ plr_y+=_y
+end
+
+function doflag()
+ local fp=field[getfkey(
+                 plr_x-xoff,
+                 plr_y-yoff)]
+
+ if fp.state=="cvd" and flgcount>0 then
+  fp.state="flg"
+  flgcount-=1
+ elseif fp.state=="flg" then
+  fp.state="cvd"
+  flgcount+=1
+ end
+end
+
+function doselect()
+ add(ckstack,
+  getfkey(plr_x-xoff,
+          plr_y-yoff))
+ 
+ _upd=updfcover
+end
+-->8
+--datas
+
+function loaddata()
+ --game levels
+	glevels={
+		{x=10,y=10,b=10},
+		{x=15,y=10,b=15},
+		{x=15,y=15,b=22},
+		{x=20,y=20,b=40},
+	}
+ --for finding items around a point
+ aroundpt={
+  {x=-1,y=-1},
+  {x= 0,y=-1},
+  {x= 1,y=-1},
+  {x=-1,y= 0},
+  {x= 1,y= 0},
+  {x=-1,y= 1},
+  {x= 0,y= 1},
+  {x= 1,y= 1}, 
+ }
+ --button moves
+ movx={-1,1,0,0}
+ movy={0,0,-1,1}
+ --sprite references
+ fieldtils={16,17,18,19,20,
+           21,22,23,24,25}
+ plr_ani={1,2,3,4}
+ fcover={32}
+ flag={48}
+end
+
+-->8
+--utils
+
+function getfkey(x,y)
+ return x..","..y
+end
+
+--calc and ret random point
+function getrandpoint(maxx,maxy)
+ return flr(rnd(maxx))+1,
+        flr(rnd(maxy))+1
+end
+
+--set bomb count around point
+function setbombcnt(_x,_y)
+ local fieldpt=field[getfkey(_x,_y)]
+ --if on bomb, skip
+ if fieldpt.val==-1 then return end
+ local count=0
+ for pt in all(aroundpt) do
+  local ax,ay=_x+pt.x,_y+pt.y
+  
+  if ax<1 or ay<1 or
+     ax>gfieldx or ay>gfieldy then
+  	--do nothing out of bound
+  else
+   local ptval=field[getfkey(ax,ay)]
+   if ptval.val==-1 then
+    count+=1
+   end
+  end
+ end 
+ fieldpt.val=count
+end
+
+--adds checks for all around a point
+function addckstack(_x,_y)
+ --add(debug,"addsk:".._x..",".._y)
+ for pt in all(aroundpt) do
+  local ax,ay=_x+pt.x,_y+pt.y
+  
+  if ax<1 or ay<1 or
+     ax>gfieldx or ay>gfieldy then
+  	--do nothing
+  else
+   local fstate=field[getfkey(ax,ay)].state
+   if fstate == "cvd" then
+    add(ckstack,getfkey(ax,ay))
+   end
+  end
+ end
+end
+
+__gfx__
+00000000770000770777000000077000000007700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000700000070000000700077000770007700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00700700000000000000000700000000770000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00077000000000000000000777000077000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00077000000000007000000077000077000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00700700000000007000000000000000000000770000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000700000077000000000077000077000770000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000770000770000777000077000077000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+66666666666666666666666666666666666666666666666666666666666666666666666666666666000000000000000000000000000000000000000000000000
+6188881d6666666d66aa666d6699966d6688866d6686866d6688866d66eee66d66eee66d6600066d000000000000000000000000000000000000000000000000
+6889988d6666666d666a666d6666966d6666866d6686866d6686666d66e6666d6666e66d6606066d000cc0000000000000000000000000000000000000000000
+689aa98d6666666d666a666d6699966d6668866d6688866d6688866d66eee66d6666e66d6600066d00cccc000000000000000000000000000000000000000000
+689aa98d6666666d666a666d6696666d6666866d6666866d6666866d66e6e66d6666e66d6606066d00cccc000000000000000000000000000000000000000000
+6889988d6666666d66aaa66d6699966d6688866d6666866d6688866d66eee66d6666e66d6600066d000cc0000000000000000000000000000000000000000000
+6188881d6666666d6666666d6666666d6666666d6666666d6666666d6666666d6666666d6666666d000000000000000000000000000000000000000000000000
+6ddddddd6ddddddd6ddddddd6ddddddd6ddddddd6ddddddd6ddddddd6ddddddd6ddddddd6ddddddd000000000000000000000000000000000000000000000000
+66666666666666666666666600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+6ffffffd6444440d6440444d00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+6ffffffd6444044d6404444d00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+6ffffffd6404404d6044444d00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+6ffffffd6440444d6404444d00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+6ffffffd6404444d6044444d00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+6ffffffd6444444d6044444d00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+6ddddddd6ddddddd6ddddddd00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+66666666000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+66966665000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+664ee865000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+66488865000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+66488665000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+66466665000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+61116665000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+65555555000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
