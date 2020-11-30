@@ -26,7 +26,7 @@ The limitations are really the beauty of PICO-8. It keeps your projects from col
 - **Clock** it's a clock with both analog and digital readout. This was a fun project working with circles of the analog portion.
 - **Mines** A Mine Sweeper demake. It kind of works, it's ugly. A few good nuggets in there.
 - **Mines 2** A Mine Sweeper demake again. Using the good parts of the first and adding multiple progressive levels. It's still ugly.
-- **Cannon** A failed attempt at a Kitten Canon.
+- **Canon** A failed attempt at a Kitten Canon.
 - **Jones** A failed attempt at a "Jones in the Fast Lane" demake.
 - **IT Slug** A game about tech support hell. Garbage.
 - **Cave Diver** From the [tutorial](https://mboffin.itch.io/gamedev-with-pico-8-issue1).
