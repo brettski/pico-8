@@ -31,3 +31,8 @@ The limitations are really the beauty of PICO-8. It keeps your projects from col
 - **IT Slug** A game about tech support hell. Garbage.
 - **Cave Diver** From the [tutorial](https://mboffin.itch.io/gamedev-with-pico-8-issue1).
 - **Lander** From the [tutorial](https://mboffin.itch.io/gamedev-with-pico-8-issue1).
+
+### Mines Logo based off of
+
+https://www.dafont.com/8-bit-arcade.font?text=mines+2
+
