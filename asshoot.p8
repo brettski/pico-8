@@ -100,6 +100,7 @@ function loaddata()
  --button moves
  movx={-1,1,0,0}
  movy={0,0,-1,1}
+ acc=3 -- acceleration value
 
 end
 __gfx__
