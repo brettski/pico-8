@@ -38,6 +38,8 @@ function setplayer()
 		miny=80,
 		maxx=128-16,
 		maxy=128-16,
+  xspd=0, --speed traveling x
+  yspd=0, --speed traveling y
 	}
 end
 
@@ -75,6 +77,12 @@ function dobutton(butt)
 end
 
 function moveplr(_x,_y)
+  --_x, _y are a value of 1 in a direction
+  --we need to accelarate the ship in that direction
+  --by the acc amoun. when not accelerating
+  --we decelerate until 0.
+  --we know as the direction is 0, so we bring
+  --the xspd or yspd closer to zero per cycle
  local newx=plr.x+_x
  local newy=plr.y+_y
  if newx <= plr.maxx and 
@@ -100,8 +108,7 @@ function loaddata()
  --button moves
  movx={-1,1,0,0}
  movy={0,0,-1,1}
- acc=3 -- acceleration value
-
+ 
 end
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
