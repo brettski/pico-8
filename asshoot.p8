@@ -1,10 +1,11 @@
 pico-8 cartridge // http://www.pico-8.com
-version 29
+version 30
 __lua__
 -- shooter
 -- brettski
 
 function _init()
+ t=0
  loaddata()
  setinitvars()
  setplayer()
@@ -12,19 +13,24 @@ function _init()
 end
 
 function _update()
+ t+=1
  _upd() 
 end
 
 function _draw()
  cls()
+ line(0,64,128,64,15)
+ drawbeam()
  drawplr()
-	spr(16,64,100)
+	drawdebug()
 end
 -->8
 --inits
 
 function setinitvars()
  rocks={}
+ debug={}
+ debugttl=1
 end
 
 function setplayer()
@@ -33,14 +39,22 @@ function setplayer()
 		y=80,
 		sprt=64, --spritetop
 		sprb=80,
-		acc=0.5,
+		acc=0.5, --acceleration
+  deacc=0.25,  --de-acc factor 
 		minx=0,
-		miny=80,
+		miny=64,
 		maxx=128-16,
 		maxy=128-16,
   xspd=0, --speed traveling x
   yspd=0, --speed traveling y
+  maxspd=4,
+  beam={},
+  bdelay=0, --current delay
+  bmax=6, --max laser beam
+  bloff={5,0}, --left beam offset
+  broff={9,0}, --right beam
 	}
+	plr.beam.delay=3 --beam delay
 end
 
 function startgame()
@@ -51,11 +65,12 @@ end
 
 function updategame()
  dobutton(getbutton())
+ updbeam()
 end
 
 function getbutton()
  for i=0,5 do
-  if btnp(i) then
+  if btn(i) then
    return i
   end
  end
@@ -63,8 +78,10 @@ function getbutton()
 end
 
 function dobutton(butt)
- if butt<0 then return end
- if butt<4 then
+ if butt<0 then 
+  -- no button press
+  moveplr(0,0)
+ elseif butt<4 then
   --⬅️➡️⬆️⬇️
   moveplr(movx[butt+1],movy[butt+1])
  elseif butt==4 then
@@ -72,6 +89,7 @@ function dobutton(butt)
   
  elseif butt==5 then
   --❎ fire
+  firebeam()
  
  end
 end
@@ -79,12 +97,34 @@ end
 function moveplr(_x,_y)
   --_x, _y are a value of 1 in a direction
   --we need to accelarate the ship in that direction
-  --by the acc amoun. when not accelerating
+  --by the acc amount. when not accelerating
   --we decelerate until 0.
   --we know as the direction is 0, so we bring
   --the xspd or yspd closer to zero per cycle
- local newx=plr.x+_x
- local newy=plr.y+_y
+ 
+ if _x != 0 then
+  plr.xspd += plr.acc * _x
+  plr.xspd = max(min(plr.xspd, plr.maxspd),plr.maxspd * -1)
+ elseif t%2==0 then
+  if plr.xspd < 0 then
+   plr.xspd += plr.deacc
+  elseif plr.xspd > 0 then
+   plr.xspd -= plr.deacc
+  end
+ end
+ if _y != 0 then 
+  plr.yspd += plr.acc * _y
+  plr.yspd = max(min(plr.yspd, plr.maxspd),plr.maxspd * -1) 
+ elseif t%2==0 then
+  if plr.yspd < 0 then
+   plr.yspd += plr.deacc
+  elseif plr.yspd > 0 then
+   plr.yspd -= plr.deacc
+  end
+ end
+
+ local newx=plr.x+plr.xspd
+ local newy=plr.y+plr.yspd
  if newx <= plr.maxx and 
     newx >= plr.minx then
   plr.x=newx
@@ -94,11 +134,24 @@ function moveplr(_x,_y)
   plr.y=newy
  end
 end
+
 -->8
 --draws
 
 function drawplr()
-  spr(plr.sprt,plr.x,plr.y,2,2)
+ spr(plr.sprt,plr.x,plr.y,2,2)
+end
+
+function drawdebug()
+ cursor(1,16)
+ color(4)
+ for txt in all(debug) do
+  print(txt)
+ end
+ if t%debugttl==0
+  or #debug > 6 then
+ 	 del(debug,debug[1])
+ end
 end
 -->8
 --datas
@@ -109,6 +162,49 @@ function loaddata()
  movx={-1,1,0,0}
  movy={0,0,-1,1}
  
+end
+-->8
+--beam laser
+
+function newbeam(_x,_y)
+ add(plr.beam, {
+  x=_x,
+  y=_y,
+  life=32,
+  draw=function(self)
+   circ(self.x+5,self.y,0.5,8)
+  end,
+  upd=function(self)
+   self.y-=2
+   self.life-=1
+   if self.life<1 then
+    del(plr.beam, self)
+   end
+   --todo collision detect
+  end,
+ })
+end
+
+function firebeam()
+ if (plr.bdelay>0
+  or #plr.beam>=plr.bmax) then
+  plr.bdelay-=1
+  return
+ end
+ plr.bdelay=plr.beam.delay
+ newbeam(plr.x,plr.y)
+end
+
+function updbeam()
+ for b in all(plr.beam) do
+  b:upd()
+ end
+end
+
+function drawbeam()
+ for b in all(plr.beam) do
+  b:draw()
+ end
 end
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
