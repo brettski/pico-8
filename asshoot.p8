@@ -5,7 +5,6 @@ __lua__
 -- brettski
 
 function _init()
- t=0
  loaddata()
  setinitvars()
  setplayer()
@@ -20,8 +19,8 @@ end
 function _draw()
  cls()
  line(0,64,128,64,15)
- drawbeam()
  drawplr()
+ drawbeam()
 	drawdebug()
 end
 -->8
@@ -64,35 +63,36 @@ end
 --updates
 
 function updategame()
- dobutton(getbutton())
+ dobutton()
  updbeam()
 end
 
-function getbutton()
- for i=0,5 do
-  if btn(i) then
-   return i
-  end
+function dobutton()
+ local butt = btn()
+ if butt & 0x0001 == 1 then
+  --⬅️
+  moveplr(-1,0)
+ elseif butt & 0x0002 == 2 then
+  --➡️
+  moveplr(1,0)
+ elseif butt & 0x0004 == 4 then
+  --⬆️
+  moveplr(0,-1)
+ elseif butt & 0x0008 == 8 then
+  --⬇️
+  moveplr(0,1)
+ else
+  moveplr(0,0)
  end
- return -1
+ if butt & 0x0010 == 16 then
+  --🅾️
+ end 
+ if butt & 0x0020 == 32 then
+  --❎
+  firebeam()
+ end 
 end
 
-function dobutton(butt)
- if butt<0 then 
-  -- no button press
-  moveplr(0,0)
- elseif butt<4 then
-  --⬅️➡️⬆️⬇️
-  moveplr(movx[butt+1],movy[butt+1])
- elseif butt==4 then
-  --🅾️ 
-  
- elseif butt==5 then
-  --❎ fire
-  firebeam()
- 
- end
-end
 
 function moveplr(_x,_y)
   --_x, _y are a value of 1 in a direction
@@ -159,8 +159,8 @@ end
 function loaddata()
  t=0
  --button moves
- movx={-1,1,0,0}
- movy={0,0,-1,1}
+ --movx={-1,1,0,0}
+ --movy={0,0,-1,1}
  
 end
 -->8
@@ -175,7 +175,7 @@ function newbeam(_x,_y)
    circ(self.x+5,self.y,0.5,8)
   end,
   upd=function(self)
-   self.y-=2
+   self.y-=4
    self.life-=1
    if self.life<1 then
     del(plr.beam, self)
