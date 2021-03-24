@@ -1,11 +1,10 @@
 pico-8 cartridge // http://www.pico-8.com
-version 30
+version 32
 __lua__
 -- shooter
 -- brettski
 
 function _init()
- loaddata()
  setinitvars()
  setplayer()
  startgame()
@@ -13,21 +12,22 @@ end
 
 function _update()
  t+=1
- _upd() 
+ _upd()
+ add(debug,spawnrate)
 end
 
 function _draw()
  cls()
  line(0,64,128,64,15)
- drawplr()
- drawbeam()
-	drawdebug()
+ drawgame()
 end
 -->8
 --inits
 
 function setinitvars()
+ t=0
  rocks={}
+ spawnrate=60
  debug={}
  debugttl=1
 end
@@ -66,6 +66,8 @@ end
 function updategame()
  dobutton()
  updbeam()
+ updrocks()
+ spawnrock()
 end
 
 function dobutton()
@@ -136,8 +138,21 @@ function moveplr(_x,_y)
  end
 end
 
+function spawnrock()
+ if t%spawnrate == 0 then
+ 	newrock(60,4)
+ 	spawnrate=flr(rnd(100)+30)
+ end
+end
 -->8
 --draws
+
+function drawgame()
+ drawplr()
+ drawbeam()
+ drawrocks()
+	drawdebug()
+end
 
 function drawplr()
  local eani=t%plr.sprbani
@@ -156,13 +171,6 @@ function drawdebug()
   or #debug > 6 then
  	 del(debug,debug[1])
  end
-end
--->8
---datas
-
-function loaddata()
- t=0
-  
 end
 -->8
 --beam laser
@@ -205,6 +213,44 @@ end
 function drawbeam()
  for b in all(plr.beam) do
   b:draw()
+ end
+end
+-->8
+--rocks
+
+function newrock(_x,_y)
+ local rock = {
+  x=_x,
+  y=_y,
+  xspd=0,
+  yspd=-1,
+  sptp=1,  --sprite pointer
+  cspt={1,2,3},  --sprites
+  sptspd=rnd(10)+2, --#sprite ani
+  upd=function(self)
+   self.x+=self.xspd
+   self.y-=self.yspd
+  	if (t%20==0) self.sptp=self.sptp%3+1
+  end,
+  draw=function(self)
+  	spr(self.cspt[self.sptp],
+  	 self.x,
+  	 self.y)
+  end,
+ }
+ add(rocks, rock)
+ return rock
+end
+
+function updrocks()
+ for r in all(rocks) do
+  r:upd()
+ end
+end
+
+function drawrocks()
+ for r in all(rocks) do
+  r:draw()
  end
 end
 __gfx__
