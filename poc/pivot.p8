@@ -15,17 +15,16 @@ function _init()
   cw=true,
   tl={}, --tail values
   addtl=function(self)
-   add(self.tl,
-    {x=self.x,y=self.y}
-   )
-   if #self.tl>19 then
-    self.tl[#self.tl]=nil
-   end
+			self.tl=sright(
+			 self.tl,
+			 20,
+			 {x=self.x,y=self.y}
+			)
   end
  }
 end
 
-function _update60()
+function _update()
  a=p.a/360
  p.x=p.ox+p.r*cos(a)
  p.y=p.oy+p.r*sin(a)
@@ -49,11 +48,32 @@ function _draw()
  --circ(p.ox,p.oy,p.r,1)
  pset(p.ox,p.oy,1)
  circfill(p.x,p.y,4,12)
- for tl in all(p.tl) do
-  circ(tl.x,tl.y,4,12)
+ local tr=4
+ for j=#p.tl,1,-1 do
+  tl=p.tl[j]
+  --tr-=(flr(j/6))
+  tr = max(1, tr)
+  circ(tl.x,tl.y,tr,6)
  end
  print(p.a,2,2)
  rect(0,0,127,127,11)
+end
+-->8
+--util
+
+--add new value to table
+--and shift values if > lmt
+function sright(tbl,lmt,value)
+ --tbl: table to work on
+ --lmt: table size limit
+ --value: value adding
+ add(tbl,value)
+ if (#tbl<=lmt) return tbl
+ local ntbl={}
+ for i=2,lmt do
+  add(ntbl,tbl[i])
+ end
+ return ntbl
 end
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
