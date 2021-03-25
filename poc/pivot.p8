@@ -9,30 +9,51 @@ function _init()
   ox=60,
   oy=60,
   a=0,
-  r=8, --movement radius
+  r=12, --movement radius
   x=0,
   y=0,
   cw=true,
+  tl={}, --tail values
+  addtl=function(self)
+   add(self.tl,
+    {x=self.x,y=self.y}
+   )
+   if #self.tl>19 then
+    self.tl[#self.tl]=nil
+   end
+  end
  }
 end
 
 function _update60()
- p.x=p.ox+p.r*cos(p.a/360)
- p.y=p.oy+p.r*sin(p.a/360)
+ a=p.a/360
+ p.x=p.ox+p.r*cos(a)
+ p.y=p.oy+p.r*sin(a)
  if p.cw then
   p.a-=2
  else
   p.a+=2
  end
  if btnp(❎) then
+  p.a=p.a-180
+  a=p.a/360
   p.cw=not p.cw
+  p.ox=p.x-p.r*cos(a)
+  p.oy=p.y-p.r*sin(a)
  end
+ p:addtl()
 end
 
 function _draw()
  cls()
+ --circ(p.ox,p.oy,p.r,1)
+ pset(p.ox,p.oy,1)
  circfill(p.x,p.y,4,12)
- print(p.a)
+ for tl in all(p.tl) do
+  circ(tl.x,tl.y,4,12)
+ end
+ print(p.a,2,2)
+ rect(0,0,127,127,11)
 end
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
