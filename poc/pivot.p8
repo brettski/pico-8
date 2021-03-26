@@ -24,7 +24,7 @@ function _init()
  }
 end
 
-function _update()
+function _update60()
  a=p.a/360
  p.x=p.ox+p.r*cos(a)
  p.y=p.oy+p.r*sin(a)
@@ -47,14 +47,16 @@ function _draw()
  cls()
  --circ(p.ox,p.oy,p.r,1)
  pset(p.ox,p.oy,1)
- circfill(p.x,p.y,4,12)
+ --tail
  local tr=4
  for j=#p.tl,1,-1 do
   tl=p.tl[j]
-  --tr-=(flr(j/6))
+  if(j%6==0)tr-=1
   tr = max(1, tr)
   circ(tl.x,tl.y,tr,6)
  end
+ --player
+ circfill(p.x,p.y,4,12)
  print(p.a,2,2)
  rect(0,0,127,127,11)
 end
