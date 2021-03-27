@@ -20,6 +20,7 @@ _drw()
 
 print(stat(1),2,121,1)
 print(stat(2),28,121,2)
+print(#enemy,54,121,3)
 color()
 end
 -->8
@@ -38,11 +39,15 @@ function start_game()
  score=0
  init_player()
  init_pdot()
+ init_enemy()
  
  _upd=function()
   if(btnp(❎)) p.switchdir()
   p:upd()
   pdot:upd()
+  for en in all(enemy) do
+   en:upd()
+  end
  end
  
  _drw=function()
@@ -52,8 +57,10 @@ function start_game()
   print(score,110,2,7)
   rect(0,0,127,127,borderc) --border
   borderc=boardercd
-  
   pdot:draw()
+  for en in all(enemy) do
+  	en:draw()
+  end
  end
 end
 
@@ -139,6 +146,30 @@ function init_player()
 	 return t<=0 or r>=127 or b>=127 or l<=0
 	end
 	
+	function p:chkenemy()
+	 local pr=self.r
+	 local testx=self.x
+	 local testy=self.y
+		for en in all(enemy) do
+		 --find closest edge
+		 if self.x<en.x then --test left
+		  testx=en.x
+		 elseif self.x>en.x+en.w then --test right
+		  testx=en.x+en.w
+		 end
+		 if self.y<en.y then --test top
+		  testy=en.y
+		 elseif self.y>en.y+en.h then --test bottom
+		  testy=en.y+en.h
+		 end
+		 local distx = self.x-testx
+		 local disty = self.y-testy
+		 if sqrt((distx*distx)+(disty*disty))<=p.r then
+		  game_over()
+		 end
+		end
+	end
+	
 	function p:upd()
 	 local a=p.a/360
 	 p.x=p.ox+p.mr*cos(a)
@@ -154,6 +185,7 @@ function init_player()
 	  p.c=8
 	  game_over()
 	 end
+	 p:chkenemy()
 	end
 	
 	function p:switchdir()
@@ -225,13 +257,38 @@ function add_enemy(_y,_lr,_t)
 	--_x path
 	--_lr direction
 	--_t type
-	local _x=trny(_lr=="l",128,-8)
-	add(enemy, {
+	local e={
 	 y=_y,
-	 x=_x,
-	  
-	})
+	 x=trny(_lr=="l",128,-8),
+	 mov=trny(_lr=="l",-0.2,0.2),
+	 w=10,
+	 h=10,
+	 c=9
+	}
 	
+	function e:upd()
+	 self.x+=self.mov
+	 if self.x < -50 or self.x > 177 then
+	  del(enemy, self)
+	 end
+	end
+	
+	function e:draw()
+	 rect(self.x,
+	 	self.y,
+	 	self.x+self.w,
+	 	self.y+self.h,
+	 	self.c)
+	end
+	
+	add(enemy,e)
+end
+
+function init_enemy()
+ enemy={}
+ add_enemy(25,"l",2)
+ add_enemy(88,"l",2)
+
 end
 -->8
 --utils
