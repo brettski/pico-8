@@ -26,6 +26,7 @@ function set_globals()
  p={} --player
  pdot={} --point dot
  score=0
+ boardercd=11 --color default
  borderc=11 --border color
 end
 
@@ -37,12 +38,15 @@ function start_game()
  _upd=function()
   if(btnp(❎)) p.switchdir()
   p:upd()
+  pdot:upd()
  end
  
  _drw=function()
   p:draw()
-  --366
+  print(score,110,2,7)
   rect(0,0,127,127,borderc) --border
+  borderc=boardercd
+  
   pdot:draw()
  end
 end
@@ -63,7 +67,8 @@ function init_player()
 		mr=12, --movement radius
 		cw=true, --movement direction
 		tl={}, --tail values
-		tlen=32, --tail length 
+		tlen=28, --tail length 
+		c=12, --color
 	}
 	
 	function p:addtl()
@@ -72,6 +77,15 @@ function init_player()
 	  self.tlen,
 	  {x=self.x,y=self.y}
   )
+	end
+	
+	function p:chkwall()
+	 local pr=self.r
+	 local t=self.y-pr
+	 local r=self.x+pr
+	 local b=self.y+pr
+	 local l=self.x-pr
+	 return t<=0 or r>=127 or b>=127 or l<=0
 	end
 	
 	function p:upd()
@@ -84,6 +98,9 @@ function init_player()
 	  p.a+=p.rs
 	 end
 	 p:addtl()
+	 if p:chkwall() then --game over
+	  p.c=11
+	 end
 	end
 	
 	function p:switchdir()
@@ -105,8 +122,7 @@ function init_player()
 	  circfill(tl.x,tl.y,tr,6)
 	 end
 	 --player
-	 circfill(p.x,p.y,p.r,12)
-	 print(p.a,2,2)
+	 circfill(p.x,p.y,p.r,p.c)
 	end
 end
 -->8
@@ -116,17 +132,29 @@ function init_pdot()
  pdot={
   x=63,
   y=-20,
-  r=4,
+  r=4, --size/radius
   dly=0, --createdelay
  }
 
 	function pdot:new()
-	 self.x=self.r+rnd(127-self.r)
-	 self.y=self.r+rnd(127-self.r)
+	 self.x=1+self.r+rnd(126-self.r)
+	 self.y=1+self.r+rnd(126-self.r)
+	end
+	pdot:new()
+	
+	function pdot:plrhit()
+	 local a=p.x-self.x
+	 local b=p.y-self.y
+	 local d=(a*a)+(b*b)
+	 return sqrt(d) <= p.r+self.r
 	end
 	
-	function pdot:upd()
-	 
+	function pdot:upd()	 
+	 if pdot:plrhit() then 
+	  boarder=7
+	  score+=1
+	  pdot:new()
+	 end
 	end
 	
 	function pdot:draw()
