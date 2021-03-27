@@ -24,12 +24,15 @@ end
 
 function set_globals()
  p={} --player
+ pdot={} --point dot
  score=0
  borderc=11 --border color
 end
 
 function start_game()
+ score=0
  init_player()
+ init_pdot()
  
  _upd=function()
   if(btnp(❎)) p.switchdir()
@@ -38,7 +41,9 @@ function start_game()
  
  _drw=function()
   p:draw()
+  --366
   rect(0,0,127,127,borderc) --border
+  pdot:draw()
  end
 end
 -->8
@@ -106,6 +111,30 @@ function init_player()
 end
 -->8
 --point dot
+
+function init_pdot()
+ pdot={
+  x=63,
+  y=-20,
+  r=4,
+  dly=0, --createdelay
+ }
+
+	function pdot:new()
+	 self.x=self.r+rnd(127-self.r)
+	 self.y=self.r+rnd(127-self.r)
+	end
+	
+	function pdot:upd()
+	 
+	end
+	
+	function pdot:draw()
+	 circfill(self.x,self.y,self.r,7)
+	end
+end
+
+
 -->8
 --enemies
 -->8
