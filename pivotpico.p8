@@ -12,6 +12,7 @@ function _init()
 end
 
 function _update60()
+ t+=1
  _upd()
 end
 
@@ -27,6 +28,7 @@ end
 --init
 
 function set_globals()
+ t=0
  p={} --player
  pdot={} --point dot
  enemy={}
@@ -48,6 +50,7 @@ function start_game()
   for en in all(enemy) do
    en:upd()
   end
+  spawn_enemy()
  end
  
  _drw=function()
@@ -240,7 +243,7 @@ function init_pdot()
 	 if pdot:plrhit() then 
 	  score+=1
 	  pdot:new()
-	  if(score%10==0)p.rs+=1
+	  if(score%10==0)p.rs+=0.5
 	 end
 	end
 	
@@ -260,7 +263,7 @@ function add_enemy(_y,_lr,_t)
 	local e={
 	 y=_y,
 	 x=trny(_lr=="l",128,-8),
-	 mov=trny(_lr=="l",-0.2,0.2),
+	 mov=trny(_lr=="l",-0.3,0.3),
 	 w=10,
 	 h=10,
 	 c=9
@@ -287,8 +290,16 @@ end
 function init_enemy()
  enemy={}
  add_enemy(25,"l",2)
- add_enemy(88,"l",2)
+ --add_enemy(88,"l",2)
+end
 
+function spawn_enemy()
+ if t%400==0 then
+  add_enemy(
+  	12+rnd(101),
+  	rnd({"l","r"}),
+  	2)
+ end
 end
 -->8
 --utils
