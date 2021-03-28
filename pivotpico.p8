@@ -128,12 +128,12 @@ function init_player()
 		mr=12, --movement radius
 		cw=true, --movement direction
 		tl={}, --tail values
-		tlen=28, --tail length 
+		tlen=32, --tail length 
 		c=12, --color
 	}
 	
 	function p:addtl()
-	 self.tl=tblsftlft(
+	 tblsftlft(
 	  self.tl,
 	  self.tlen,
 	  {x=self.x,y=self.y}
@@ -205,7 +205,7 @@ function init_player()
 	 local tr = p.r
 	 for j=#p.tl,1,-1 do
 	  local tl=p.tl[j]
-	  if(j%6==0)tr-=1
+	  if(j%7==0)tr-=1
 	  tr=max(1,tr)
 	  circfill(tl.x,tl.y,tr,6)
 	 end
@@ -305,16 +305,9 @@ end
 --utils
 
 function tblsftlft(tbl,lmt,val)
-	--tbl: table to work on
-	--lmt: table size limit
-	--val: value adding
-	add(tbl,val)
-	if(#tbl<=lmt) return tbl
-	local ntbl={}
-	for i=2,lmt do
-	 add(ntbl,tbl[i])
-	end
-	return ntbl
+ add(tbl,val)
+ if(#tbl>lmt) deli(tbl,1)
+ --tables are by reference
 end
 
 function trny(c,t,f)
