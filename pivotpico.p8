@@ -205,7 +205,7 @@ function init_player()
 	 local tr = p.r
 	 for j=#p.tl,1,-1 do
 	  local tl=p.tl[j]
-	  if(j%7==0)tr-=1
+	  if(j%6==0)tr-=1
 	  tr=max(1,tr)
 	  circfill(tl.x,tl.y,tr,6)
 	 end
