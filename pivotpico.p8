@@ -35,10 +35,12 @@ function set_globals()
  score=0
  boardercd=11 --color default
  borderc=11 --border color
+ shake=0
 end
 
 function start_game()
  score=0
+ shake=0
  init_player()
  init_pdot()
  init_enemy()
@@ -82,16 +84,18 @@ function gameover_d()
  print("\^w\^t\^bgame over",27,35,0)
  ?"you completed \^i"..score.."\^-i captures!",15,49,0
  print("well done! you earned:",18,58,0)
-		local i = score\10 + 1
-		i = min(15,i)
-		local wi=winicon[i]
-  spr(wi.i,59,68)
-  local x = (113\2+5) - (#wi.t*4\2)
-  print(wi.t,x,80)
-  print("press 🅾️ to play again",9,93)
+ local i = score\10 + 1
+ i = min(15,i)
+ local wi=winicon[i]
+ spr(wi.i,59,68)
+ local x = (113\2+5) - (#wi.t*4\2)
+ print(wi.t,x,80)
+ print("press 🅾️ to play again",9,93)
+ doshake();
 end
 
 function game_over()
+ shake=0.5
  _upd=gameover_u
  _drw=gameover_d
 end
@@ -199,7 +203,7 @@ function init_player()
 	 p.oy=p.y-p.mr*sin(a)
 	end
 	
-	function p.draw()
+	function p:draw()
 	 pset(p.ox,p.oy,1)
 	 --tail
 	 local tr = p.r
@@ -317,6 +321,23 @@ function trny(c,t,f)
   return f
  end 
 end
+
+function doshake()
+ local shakex=16-rnd(32)
+ local shakey=16-rnd(32)
+
+ -- apply the shake strength
+ shakex*=shake
+ shakey*=shake
+ 
+ camera(shakex,shakey)
+ 
+ -- finally, fade out the shake
+ -- reset to 0 when very low
+ shake = shake*0.95
+ if (shake<0.05) shake=0
+end
+
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
