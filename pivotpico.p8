@@ -73,12 +73,20 @@ end
 --2
 
 function gameover_u()
+ gameover_u1()
+end
+
+function gameover_d()
+ gameover_d1()
+end
+
+function gameover_u1()
  if btnp(🅾️) then
   start_game()
  end
 end
 
-function gameover_d()
+function gameover_d1()
  rect(6,32,121,99,7)
  rectfill(7,33,120,98,13)
  print("\^w\^t\^bgame over",27,35,0)
@@ -91,7 +99,7 @@ function gameover_d()
  local x = (113\2+5) - (#wi.t*4\2)
  print(wi.t,x,80)
  print("press 🅾️ to play again",9,93)
- doshake();
+ --doshake();
 end
 
 function game_over()
