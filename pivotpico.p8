@@ -230,8 +230,8 @@ end
 
 function init_pdot()
  pdot={
-  x=63,
-  y=-20,
+  x=60,
+  y=60,
   r=4, --size/radius
   dly=0, --createdelay
  }
@@ -240,7 +240,7 @@ function init_pdot()
 	 self.x=1+self.r+rnd(119-self.r)
 	 self.y=1+self.r+rnd(119-self.r)
 	end
-	pdot:new()
+	--pdot:new()
 	
 	function pdot:plrhit()
 	 local a=p.x-self.x
@@ -289,7 +289,7 @@ function add_enemy(_y,_lr,_t)
 	end
 	
 	function e:draw()
-	 rect(self.x,
+	 rectfill(self.x,
 	 	self.y,
 	 	self.x+self.w,
 	 	self.y+self.h,
