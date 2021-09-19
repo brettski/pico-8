@@ -23,6 +23,7 @@ print(stat(1),2,121,1)
 print(stat(2),28,121,2)
 print(#enemy,54,121,3)
 color()
+pset(63,63,8)
 end
 -->8
 --init
@@ -33,13 +34,15 @@ function set_globals()
  pdot={} --point dot
  enemy={}
  score=0
+ scypos=58
+ scxpos={60,57,53}
  boardercd=11 --color default
  borderc=11 --border color
  shake=0
 end
 
 function start_game()
- score=0
+ score=98
  shake=0
  init_player()
  init_pdot()
@@ -57,7 +60,8 @@ function start_game()
  
  _drw=function()
   cls()
-  print("\^w\^t"..score,63,58,6)
+  local spidx=flr(log10(score))+1
+  print("\^w\^t"..score,scxpos[spidx],scypos,6)
   p:draw()
   print(p.rs,4,2,7)
   rect(0,0,127,127,borderc) --border
@@ -130,8 +134,8 @@ winicon={
 
 function init_player()
 	p={
-		ox=60, --origin x
-		oy=60, --origin y
+		ox=63, --origin x
+		oy=63, --origin y
 		x=0, --position x
 		y=0, --position y
 		a=0, --angle to origin
@@ -230,8 +234,8 @@ end
 
 function init_pdot()
  pdot={
-  x=60,
-  y=60,
+  x=63,
+  y=63,
   r=4, --size/radius
   dly=0, --createdelay
  }
@@ -346,6 +350,23 @@ function doshake()
  if (shake<0.05) shake=0
 end
 
+-- log10
+log10_table = {
+ 0, 0.3, 0.475,
+ 0.6, 0.7, 0.775,
+ 0.8375, 0.9, 0.95, 1
+}
+
+function log10(n)
+ if (n < 1) return nil
+ local e = 0
+ while n > 10 do
+  n /= 10
+  e += 1
+ end
+ return log10_table[flr(n)] + e
+end
+-- end log1o
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
