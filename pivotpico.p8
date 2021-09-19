@@ -23,7 +23,7 @@ print(stat(1),2,121,1)
 print(stat(2),28,121,2)
 print(#enemy,54,121,3)
 color()
-pset(63,63,8)
+--pset(63,63,8)
 end
 -->8
 --init
@@ -42,7 +42,7 @@ function set_globals()
 end
 
 function start_game()
- score=98
+ score=0
  shake=0
  init_player()
  init_pdot()
@@ -241,8 +241,8 @@ function init_pdot()
  }
 
 	function pdot:new()
-	 self.x=1+self.r+rnd(119-self.r)
-	 self.y=1+self.r+rnd(119-self.r)
+	 self.x=7+self.r+rnd(111-self.r)
+	 self.y=7+self.r+rnd(111-self.r)
 	end
 	--pdot:new()
 	
