@@ -1,5 +1,5 @@
 pico-8 cartridge // http://www.pico-8.com
-version 32
+version 33
 __lua__
 --pivot pico
 --by brettski
@@ -57,9 +57,9 @@ function start_game()
  
  _drw=function()
   cls()
+  print("\^w\^t"..score,63,58,6)
   p:draw()
   print(p.rs,4,2,7)
-  print(score,110,2,7)
   rect(0,0,127,127,borderc) --border
   borderc=boardercd
   pdot:draw()
