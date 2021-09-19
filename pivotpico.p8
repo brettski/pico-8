@@ -3,8 +3,9 @@ version 33
 __lua__
 --pivot pico
 --by brettski
---demake of pivot
+--demake of pivot xl
 -- developed by adamview studios
+--  aka nickervision
 
 function _init()
  set_globals()
@@ -65,7 +66,9 @@ function start_game()
  
  _drw=function()
   local spidx=flr(log10(score))+1
-  print("\^w\^t"..score,scxpos[spidx],scypos,6)
+  if (score > 0) then
+   print("\^w\^t"..score,scxpos[spidx],scypos,6)
+  end
   p:draw()
   rect(0,0,127,127,borderc) --border
   borderc=boardercd
@@ -223,7 +226,7 @@ function init_player()
 	end
 	
 	function p:draw()
-	 pset(p.ox,p.oy,1)
+	 if (isdbg) pset(p.ox,p.oy,1)
 	 --tail
 	 local tr = p.r
 	 for j=#p.tl,1,-1 do
