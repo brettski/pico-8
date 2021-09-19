@@ -19,16 +19,20 @@ end
 function _draw()
 _drw()
 
-print(stat(1),2,121,1)
-print(stat(2),28,121,2)
-print(#enemy,54,121,3)
-color()
---pset(63,63,8)
+	if isdbg then
+		print(stat(1),2,121,1)
+		print(stat(2),28,121,2)
+		print(#enemy,54,121,3)
+	 print(p.rs,4,2,7)
+		pset(63,63,8)
+	 color()
+	end
 end
 -->8
 --init
 
 function set_globals()
+ isdbg=false
  t=0
  p={} --player
  pdot={} --point dot
@@ -63,7 +67,6 @@ function start_game()
   local spidx=flr(log10(score))+1
   print("\^w\^t"..score,scxpos[spidx],scypos,6)
   p:draw()
-  print(p.rs,4,2,7)
   rect(0,0,127,127,borderc) --border
   borderc=boardercd
   pdot:draw()
