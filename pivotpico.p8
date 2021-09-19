@@ -99,8 +99,8 @@ function gameover_d1()
 end
 
 function drw_go_dialog()
- rect(6,32,121,99,7)
- rectfill(7,33,120,98,13)
+ rectfill(5,31,122,100,13)
+ rect(6,32,121,99,5)
  print("\^w\^t\^bgame over",27,35,0)
  ?"you completed \^i"..score.."\^-i captures!",15,49,0
  print("well done! you earned:",18,58,0)
@@ -108,7 +108,7 @@ function drw_go_dialog()
  i = min(15,i)
  local wi=winicon[i]
  spr(wi.i,59,68)
- local x = (113\2+5) - (#wi.t*4\2)
+ local x = (113\2+9) - (#wi.t*4\2)
  print(wi.t,x,80)
  print("press 🅾️ to play again",9,93)
 end
@@ -248,8 +248,8 @@ function init_pdot()
  }
 
 	function pdot:new()
-	 self.x=7+self.r+rnd(111-self.r)
-	 self.y=7+self.r+rnd(111-self.r)
+	 self.x=15+self.r+rnd(103-self.r)
+	 self.y=15+self.r+rnd(103-self.r)
 	end
 	--pdot:new()
 	
@@ -274,7 +274,6 @@ function init_pdot()
 	 circfill(self.x,self.y,self.r,7)
 	end
 end
-
 
 -->8
 --enemies
@@ -327,18 +326,18 @@ end
 -->8
 --utils
 
+--table shift left
 function tblsftlft(tbl,lmt,val)
  add(tbl,val)
  if(#tbl>lmt) deli(tbl,1)
  --tables are by reference
 end
 
+--ternary
 function trny(c,t,f)
- if c then
-  return t
- else
-  return f
- end 
+ --if (c) return t
+ --return f
+ return c and t or f
 end
 
 function doshake()
