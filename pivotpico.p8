@@ -17,6 +17,7 @@ function _update60()
 end
 
 function _draw()
+cls()
 _drw()
 
 	if isdbg then
@@ -63,7 +64,6 @@ function start_game()
  end
  
  _drw=function()
-  cls()
   local spidx=flr(log10(score))+1
   print("\^w\^t"..score,scxpos[spidx],scypos,6)
   p:draw()
@@ -77,7 +77,7 @@ function start_game()
 end
 
 -->8
---2
+--game over
 
 function gameover_u()
  gameover_u1()
@@ -94,6 +94,11 @@ function gameover_u1()
 end
 
 function gameover_d1()
+ doshake()
+ drw_go_dialog()
+end
+
+function drw_go_dialog()
  rect(6,32,121,99,7)
  rectfill(7,33,120,98,13)
  print("\^w\^t\^bgame over",27,35,0)
@@ -106,7 +111,6 @@ function gameover_d1()
  local x = (113\2+5) - (#wi.t*4\2)
  print(wi.t,x,80)
  print("press 🅾️ to play again",9,93)
- --doshake();
 end
 
 function game_over()
@@ -350,7 +354,10 @@ function doshake()
  -- finally, fade out the shake
  -- reset to 0 when very low
  shake = shake*0.95
- if (shake<0.05) shake=0
+ if (shake<0.05) then
+  shake=0
+  return true
+ end
 end
 
 -- log10
