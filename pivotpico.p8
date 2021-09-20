@@ -5,7 +5,6 @@ __lua__
 --by brettski
 --demake of pivot xl
 -- developed by adamview studios
---  aka nickervision
 
 function _init()
  set_globals()
@@ -49,6 +48,8 @@ function set_globals()
  boarderc=11 --border color
  shake=0
  hscore=0
+ hsidx=15 --dget index
+ cartdata("brettski_pivotpico_1")
 end
 
 function start_game()
@@ -108,13 +109,17 @@ end
 
 function drw_go_dialog()
 	hscore=max(score,hscore)
+	local athscore=max(score,dget(hsidx))
+	dset(hsidx,athscore)
  rectfill(5,31,122,100,13)
  rect(6,32,121,99,5)
  print("\^w\^t\^bgame over",27,35,0)
  ?"you completed \^i"..score.."\^-i captures!",15,49,0
  print("well done! you earned:",15,58,0)
  print("best:",15,82)
+ print("atb:", 89,82)
  print(hscore,35,82,11)
+ print(athscore,105,82)
  local i = score\10 + 1
  i = min(15,i)
  circfill(63,72,7,1)
