@@ -26,7 +26,10 @@ _drw()
 		print(stat(2),28,121,2)
 		print(#enemy,54,121,3)
 	 print(p.rs,4,2,7)
-		pset(63,63,8)
+	 if #enemy > 0 then
+		 print(enemy[1].mov,60,121,7)
+		end
+		print("t:"..t,74,121,7)
 	 color()
 	end
 end
@@ -39,20 +42,23 @@ function set_globals()
  p={} --player
  pdot={} --point dot
  enemy={}
+ enemyspd=0.5
  score=0
  scypos=58
  scxpos={60,57,53}
- boardercd=11 --color default
- borderc=11 --border color
+ boarderc=11 --border color
  shake=0
+ hscore=0
 end
 
 function start_game()
+ t=0
  score=0
  shake=0
  init_player()
  init_pdot()
  init_enemy()
+ boarderc=p.c
  
  _upd=function()
   if(btnp(❎)) p.switchdir()
@@ -70,8 +76,7 @@ function start_game()
    print("\^w\^t"..score,scxpos[spidx],scypos,6)
   end
   p:draw()
-  rect(0,0,127,127,borderc) --border
-  borderc=boardercd
+  rect(0,0,127,127,boarderc) --border
   pdot:draw()
   for en in all(enemy) do
   	en:draw()
@@ -102,18 +107,22 @@ function gameover_d1()
 end
 
 function drw_go_dialog()
+	hscore=max(score,hscore)
  rectfill(5,31,122,100,13)
  rect(6,32,121,99,5)
  print("\^w\^t\^bgame over",27,35,0)
  ?"you completed \^i"..score.."\^-i captures!",15,49,0
- print("well done! you earned:",18,58,0)
+ print("well done! you earned:",15,58,0)
+ print("best:",15,82)
+ print(hscore,35,82,11)
  local i = score\10 + 1
  i = min(15,i)
+ circfill(63,72,7,1)
  local wi=winicon[i]
- spr(wi.i,59,68)
+ spr(wi.i,60,68)
  local x = (113\2+9) - (#wi.t*4\2)
- print(wi.t,x,80)
- print("press 🅾️ to play again",9,93)
+ print(wi.t,x,82,0)
+ print("press 🅾️ to play again",21,93)
 end
 
 function game_over()
@@ -124,13 +133,13 @@ end
 
 winicon={
  {i=0,t="nil!"},
- {i=56,t="carrots"},
- {i=48,t="green grapes"},
- {i=49,t="red grapes"},
  {i=61,t="1 blueberry"},
+ {i=48,t="green grapes"},
+ {i=52,t="strawberry ?"},
+ {i=49,t="red grapes"},
+ {i=56,t="carrots"},
  {i=50,t="yummy apple"},
  {i=51,t="freaky kiwi"},
- {i=52,t="strawberry ?"},
  {i=53,t="watermelon slice"},
  {i=54,t="whole watermelon!"},
  {i=55,t="pretty sunflower"},
@@ -251,8 +260,8 @@ function init_pdot()
  }
 
 	function pdot:new()
-	 self.x=15+self.r+rnd(103-self.r)
-	 self.y=15+self.r+rnd(103-self.r)
+	 self.x=15+self.r+rnd(99-self.r)
+	 self.y=15+self.r+rnd(99-self.r)
 	end
 	--pdot:new()
 	
@@ -269,7 +278,9 @@ function init_pdot()
 	 if pdot:plrhit() then 
 	  score+=1
 	  pdot:new()
-	  if(score%10==0)p.rs+=0.5
+	  if score%10==0 and score<60 then
+	   p.rs+=0.5
+	  end
 	 end
 	end
 	
@@ -285,15 +296,20 @@ function add_enemy(_y,_lr,_t)
 	--_x path
 	--_lr direction
 	--_t type
+	local et = enemy_types[_t]
 	local e={
-	 y=_y,
-	 x=trny(_lr=="l",128,-8),
-	 mov=trny(_lr=="l",-0.3,0.3),
-	 w=10,
-	 h=10,
-	 c=9
+		c=et.c,
+		w=et.w,
+		h=et.h,
+		draw=et.draw,
+		y=_y,
+		lr=_lr,
 	}
 	
+	e.x=trny(_lr=="l",147,-20-e.w)
+	e.mov=trny(_lr=="l"
+	  ,-1*enemyspd,enemyspd)
+
 	function e:upd()
 	 self.x+=self.mov
 	 if self.x < -50 or self.x > 177 then
@@ -301,31 +317,68 @@ function add_enemy(_y,_lr,_t)
 	 end
 	end
 	
-	function e:draw()
-	 rectfill(self.x,
-	 	self.y,
-	 	self.x+self.w,
-	 	self.y+self.h,
-	 	self.c)
-	end
-	
 	add(enemy,e)
 end
 
 function init_enemy()
  enemy={}
- add_enemy(25,"l",2)
- --add_enemy(88,"l",2)
+ --add_enemy(25,"l",1)
+ t=300
 end
 
 function spawn_enemy()
  if t%400==0 then
+  local _t=1
+  if (score>10) _t=2
+  if (score>20) _t=rnd({1,2})
   add_enemy(
   	12+rnd(101),
   	rnd({"l","r"}),
-  	2)
+  	_t)
  end
 end
+
+function ecome(_e) 
+ if _e.lr=="l"
+  and _e.x > 100 then
+   boarderc=_e.c
+ elseif _e.lr=="r"
+  and _e.x < 28 then
+   boarderc=_e.c
+ end
+ 
+end
+
+enemy_types = {
+ {
+ 	n="square",
+ 	c=9,
+ 	w=10,
+ 	h=10,
+ 	draw=function(self)
+ 	 ecome(self)
+		 rectfill(self.x,
+		 	self.y,
+		 	self.x+self.w,
+		 	self.y+self.h,
+		 	self.c)		
+ 	end,
+ },
+ {
+ 	n="rect",
+ 	c=3,
+ 	w=16,
+ 	h=10,
+ 	draw=function(self)
+ 	 ecome(self)
+		 rectfill(self.x,
+		 	self.y,
+		 	self.x+self.w,
+		 	self.y+self.h,
+		 	self.c)		
+ 	end,
+ }
+}
 -->8
 --utils
 
@@ -404,11 +457,11 @@ __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-0000400000004000000040000333333008b8b800000000000aaaaaa009a9a9003bb0b030081111000119110000aaa00600cc00000d1d10000000000000000000
-03b343b002124210000400003bb1b1b328b8888000000000a888882a9d1d1d900b0003000188880000ccc0000afffa060cccc000d100d0000000000000000000
-033143300225422008e4ee003b1777132b888b803e8188e3a2eeee8aa1d1d1a09ba043a00f3f3f000f0f0f000f1f1f069c1cc00d1d1d1d000000000000000000
-13b13b1b5215215128eee6e03bb1b1b3222222b03a881ea3a888288a9d1d1d90999049a000fff00000fff000088888060cccddddd1d1d1000000000000000000
-111133132155225228ee67e04333333928b8b8803aeeeea3baaaaaa309a9a900999049900f4f5f00011d11003388833f0cccdddd1d1d1d000000000000000000
-113b11111521555528eeeee044499aa9b8b8b8b003aaaa30b3bb33b3333b3bb0449049900f545f0001171100f3b8b30400ccccc001d1d0000000000000000000
-313313b1252252152288888004499999b888888000333300b3bb33b3bb3b3bb044904990005540000f111f000333330000ccc000000000000000000000000000
+0000400000004000000040000333333008b8b800000000000aaaaaa009a9a9003bb0b030081111000119110000aaa00600cc0000000000000000000000000000
+03b343b002124210000400003bb1b1b328b8888000000000a888882a9d1d1d900b0003000188880000ccc0000afffa060cccc00000d1d1000000000000000000
+033143300225422008e4ee003b1777132b888b803e8188e3a2eeee8aa1d1d1a09ba043a00f3f3f000f0f0f000f1f1f069c1cc00d0d100d000000000000000000
+13b13b1b5215215128eee6e03bb1b1b3222222b03a881ea3a888288a9d1d1d90999049a000fff00000fff000088888060cccdddd01d1d1d00000000000000000
+111133132155225228ee67e04333333928b8b8803aeeeea3baaaaaa309a9a900999049900f4f5f00011d11003388833f0cccdddd0d1d1d100000000000000000
+113b11111521555528eeeee044499aa9b8b8b8b003aaaa30b3bb33b3333b3bb0449049900f545f0001171100f3b8b30400ccccc001d1d1d00000000000000000
+313313b1252252152288888004499999b888888000333300b3bb33b3bb3b3bb044904990005540000f111f000333330000ccc000001d1d000000000000000000
 0311133002555220022222000444444008b8b8000000000003bb33b0000b00000400090000505000001010000040040000909000000000000000000000000000
