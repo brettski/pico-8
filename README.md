@@ -26,6 +26,7 @@ The limitations are really the beauty of PICO-8. It keeps your projects from col
 - **Clock** it's a clock with both analog and digital readout. This was a fun project working with circles of the analog portion.
 - **Mines** A Mine Sweeper demake. It kind of works, it's ugly. A few good nuggets in there.
 - **Mines 2** A Mine Sweeper demake again. Using the good parts of the first and adding multiple progressive levels. It's still ugly.
+- **Pivot Pico** A demake of Pivot XL (from Adamvison Studios). Its slowly improving. It's been fun to work on.
 - **Canon** A failed attempt at a Kitten Canon.
 - **Jones** A failed attempt at a "Jones in the Fast Lane" demake.
 - **IT Slug** A game about tech support hell. Garbage.
@@ -34,5 +35,4 @@ The limitations are really the beauty of PICO-8. It keeps your projects from col
 
 ### Mines Logo based off of
 
-https://www.dafont.com/8-bit-arcade.font?text=mines+2
-
+[https://www.dafont.com/8-bit-arcade.font?text=mines+2](https://www.dafont.com/8-bit-arcade.font?text=mines+2)
