@@ -67,6 +67,7 @@ function start_game()
   pdot:upd()
   for en in all(enemy) do
    en:upd()
+   en:colchk()
   end
   spawn_enemy()
  end
@@ -116,10 +117,10 @@ function drw_go_dialog()
  print("\^w\^t\^bgame over",27,35,0)
  ?"you completed \^i"..score.."\^-i captures!",15,49,0
  print("well done! you earned:",15,58,0)
- print("best:",15,82)
- print("atb:", 89,82)
- print(hscore,35,82,11)
- print(athscore,105,82)
+ print("best:",15,70)
+ print("atb:", 89,70)
+ print(hscore,35,70,11)
+ print(athscore,105,70)
  local i = score\10 + 1
  i = min(15,i)
  circfill(63,72,7,1)
@@ -189,29 +190,6 @@ function init_player()
 	 return t<=0 or r>=127 or b>=127 or l<=0
 	end
 	
-	function p:chkenemy()
-	 local pr=self.r
-	 local testx=self.x
-	 local testy=self.y
-		for en in all(enemy) do
-		 --find closest edge
-		 if self.x<en.x then --test left
-		  testx=en.x
-		 elseif self.x>en.x+en.w then --test right
-		  testx=en.x+en.w
-		 end
-		 if self.y<en.y then --test top
-		  testy=en.y
-		 elseif self.y>en.y+en.h then --test bottom
-		  testy=en.y+en.h
-		 end
-		 local distx = self.x-testx
-		 local disty = self.y-testy
-		 if sqrt((distx*distx)+(disty*disty))<=p.r then
-		  game_over()
-		 end
-		end
-	end
 	
 	function p:upd()
 	 local a=p.a/360
@@ -224,11 +202,9 @@ function init_player()
 	 end
 	 p:addtl()
 	 if p:chkwall() then 
-	  --game over
 	  p.c=8
 	  game_over()
 	 end
-	 p:chkenemy()
 	end
 	
 	function p:switchdir()
@@ -306,6 +282,7 @@ function add_enemy(_y,_lr,_t)
 		c=et.c,
 		w=et.w,
 		h=et.h,
+  colchk=et.colchk,
 		draw=et.draw,
 		y=_y,
 		lr=_lr,
@@ -354,12 +331,46 @@ function ecome(_e)
  
 end
 
+function colchk_square(self)
+ local _en=self
+	local testx=p.x
+	local testy=p.y
+	--find closest x edge
+	if p.x<_en.x then --test left
+	 testx=_en.x
+	elseif p.x>_en.x+_en.w then -- test right
+	 testx=_en.x+_en.w
+	end
+	--find closest y edge
+	if p.y<_en.y then --test top
+	 testy=_en.y
+	elseif p.y>_en.y+_en.h then --test bottom
+  testy=_en.y+_en.h
+	end
+	local distx=p.x-testx
+	local disty=p.y-testy
+	if sqrt((distx*distx)+(disty*disty))<=p.r then
+	 game_over()
+	end
+end
+
+function colchk_circle(_e)
+-- wip > from pdot
+	 local a=p.x-self.x
+	 local b=p.y-self.y
+	 local d=(a*a)+(b*b)
+	 --for less precision on hit
+	 --sqrt(d)-(p.r+self.r) <=0.1
+	 return sqrt(d) <= p.r+self.r
+end
+
 enemy_types = {
  {
  	n="square",
  	c=9,
  	w=10,
  	h=10,
+  colchk=colchk_square,
  	draw=function(self)
  	 ecome(self)
 		 rectfill(self.x,
@@ -374,6 +385,7 @@ enemy_types = {
  	c=3,
  	w=16,
  	h=10,
+  colchk=colchk_square,
  	draw=function(self)
  	 ecome(self)
 		 rectfill(self.x,
