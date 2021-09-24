@@ -305,11 +305,11 @@ end
 function init_enemy()
  enemy={}
  --add_enemy(25,"l",1)
- t=300
+ --t=300
 end
 
 function spawn_enemy()
- if t%400==0 then
+ if t%200==0 then
   local _t=1
   if (score>10) _t=2
   if (score>20) _t=rnd({1,2})
@@ -331,8 +331,7 @@ function ecome(_e)
  
 end
 
-function colchk_square(self)
- local _en=self
+function colchk_square(_en)
 	local testx=p.x
 	local testy=p.y
 	--find closest x edge
@@ -354,7 +353,7 @@ function colchk_square(self)
 	end
 end
 
-function colchk_circle(_e)
+function colchk_circle(_en)
 -- wip > from pdot
 	 local a=p.x-self.x
 	 local b=p.y-self.y
@@ -368,8 +367,8 @@ enemy_types = {
  {
  	n="square",
  	c=9,
- 	w=10,
- 	h=10,
+ 	w=6,
+ 	h=6,
   colchk=colchk_square,
  	draw=function(self)
  	 ecome(self)
@@ -383,8 +382,8 @@ enemy_types = {
  {
  	n="rect",
  	c=3,
- 	w=16,
- 	h=10,
+ 	w=12,
+ 	h=6,
   colchk=colchk_square,
  	draw=function(self)
  	 ecome(self)
