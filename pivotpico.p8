@@ -274,7 +274,7 @@ end
 --enemies
 
 function add_enemy(_y,_lr,_t)
-	--_x path
+	--_y path
 	--_lr direction
 	--_t type
 	local et = enemy_types[_t]
@@ -286,6 +286,7 @@ function add_enemy(_y,_lr,_t)
 		draw=et.draw,
 		y=_y,
 		lr=_lr,
+		t=_t,
 	}
 	
 	e.x=trny(_lr=="l",147,-20-e.w)
@@ -322,13 +323,43 @@ end
 
 function ecome(_e) 
  if _e.lr=="l"
-  and _e.x > 100 then
-   boarderc=_e.c
+   and _e.x > 100 then
+  boarderc=_e.c
  elseif _e.lr=="r"
-  and _e.x < 28 then
-   boarderc=_e.c
+   and _e.x < 28 then
+  boarderc=_e.c
  end
- 
+end
+
+function linedirleft(_e)
+ --line direction left
+ --top line
+ local _y=_e.y
+ local _yh=_e.y+_e.h
+ line(127,_y,100,_y,_e.c)
+ --botton line
+ line(127,_yh,100,_yh,_e.c)
+end
+
+function linedirright(_e)
+end
+
+function ecomeline(_e)
+	if _e.lr=="l"
+	  and _e.x > 120 then
+	 if _e.t < 3 then
+	  --draw approaching lines
+	  --for rects
+	  linedirleft(_e)
+	 else --draw for circles
+	 
+	 end
+	elseif _e.lr=="r"
+	  and _e.x < 28 then
+	 if _e.t < 3 then
+	 else
+	 end
+	end
 end
 
 function colchk_square(_en)
@@ -372,6 +403,7 @@ enemy_types = {
   colchk=colchk_square,
  	draw=function(self)
  	 ecome(self)
+ 	 ecomeline(self)
 		 rectfill(self.x,
 		 	self.y,
 		 	self.x+self.w,
