@@ -128,7 +128,7 @@ function dobutt(butt)
 end
 
 function draw_cmds()
- stst = t.ispaused and
+ local stst = t.ispaused and
   "start" or "stop"
  print("controls:",4,88,7)
  print("❎: "..stst)
