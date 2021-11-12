@@ -289,7 +289,7 @@ function add_enemy(_y,_lr,_t)
 		t=_t,
 	}
 	
-	e.x=trny(_lr=="l",147,-20-e.w)
+	e.x=trny(_lr=="l",157,-30-e.w)
 	e.mov=trny(_lr=="l"
 	  ,-1*enemyspd,enemyspd)
 
@@ -321,45 +321,38 @@ function spawn_enemy()
  end
 end
 
+function ecomealert(_e)
+  local _x=_e.x
+  local _y=_e.y+_e.h/2
+  local lx=0
+  local off=0
+  local dist=(t%16)*1.5
+	if _e.lr=="l" then
+  lx=min(127,_x)-dist
+  off=1
+ elseif _e.lr=="r" then
+  lx=max(0,_x)+dist+_e.w
+  off=-1
+ end
+ circ(lx,_y,0,_e.c)
+ circ(lx+off,_y+off,0,_e.c)
+ circ(lx+off,_y-off,0,_e.c)
+ circ(lx+off*2,_y+off*2,0,_e.c)
+ circ(lx+off*2,_y-off*2,0,_e.c)
+
+
+end
+
 function ecome(_e) 
  if _e.lr=="l"
-   and _e.x > 100 then
+   and _e.x > 111 then
   boarderc=_e.c
+  ecomealert(_e)
  elseif _e.lr=="r"
-   and _e.x < 28 then
+   and _e.x < 16 then
   boarderc=_e.c
+  ecomealert(_e)
  end
-end
-
-function linedirleft(_e)
- --line direction left
- --top line
- local _y=_e.y
- local _yh=_e.y+_e.h
- line(127,_y,100,_y,_e.c)
- --botton line
- line(127,_yh,100,_yh,_e.c)
-end
-
-function linedirright(_e)
-end
-
-function ecomeline(_e)
-	if _e.lr=="l"
-	  and _e.x > 120 then
-	 if _e.t < 3 then
-	  --draw approaching lines
-	  --for rects
-	  linedirleft(_e)
-	 else --draw for circles
-	 
-	 end
-	elseif _e.lr=="r"
-	  and _e.x < 28 then
-	 if _e.t < 3 then
-	 else
-	 end
-	end
 end
 
 function colchk_square(_en)
@@ -403,7 +396,6 @@ enemy_types = {
   colchk=colchk_square,
  	draw=function(self)
  	 ecome(self)
- 	 ecomeline(self)
 		 rectfill(self.x,
 		 	self.y,
 		 	self.x+self.w,
