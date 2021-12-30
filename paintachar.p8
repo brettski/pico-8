@@ -133,7 +133,7 @@ function getcharvals()
   for x=0,7 do
    row+=mget(x,y)*(2^x)
   end
-  bm..=chr(row)
+  bm..=trny(row==0,0,chr(row))
   hm..=tohex(row)
   row=0
  end
@@ -168,6 +168,11 @@ function toclipboard()
  else
   printh(escp_bin_str(bchar),"@clip")
  end
+end
+
+function trny(c,t,f)
+ if (c) return t
+ return f
 end
 __gfx__
 00000000676767677777000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
