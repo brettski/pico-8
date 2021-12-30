@@ -14,9 +14,9 @@ function _update()
  mbt=stat(34)
  tlx=flr(msx/8)
  tly=flr(msy/8)
- if mbt==1 then
+ if mbt==1 and msx<64 and msy<64 then
   mset(tlx,tly,1)
- elseif mbt==2 then
+ elseif mbt==2 and msx<64 and msy<64 then
   mset(tlx,tly,0)
  end
  if btnp(❎) then
