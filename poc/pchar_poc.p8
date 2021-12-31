@@ -23,6 +23,8 @@ function _update()
   clearmap()
  elseif btnp(🅾️) then
   toclip(mbit)
+ elseif btnp(⬇️) then
+  importhex("447cb67c3e7f0106")
  end
  mhex,mbit=getmapvals()
 end
@@ -95,6 +97,35 @@ function drawins()
  print("🅾️/c send to clipboard")
  
 end
+-->8
+--import
+
+function importhex(hex)
+ printh("importhex()")
+ -- 1+2+4+8+16+32+64+128
+ rpos={0x01,0x02,0x04,0x08,
+       0x10,0x20,0x40,0x80}
+ assert(#hex==16,"import hex must be a 16 char string")
+ hexparts={}
+ for i=1,15,2 do
+  add(hexparts,sub(hex,i,i+1))
+ end
+ for p in all(hexparts) do
+  printh(p)
+ end
+  
+ local row
+ for y=0,7 do
+   row=tonum("0x"..hexparts[y+1])
+  for x=0,7 do
+   if row & rpos[x+1] > 0 then
+    mset(x,y,1)
+   end
+  end
+ end
+ 
+end
+
 __gfx__
 00000000060606067777000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000606060607760000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
