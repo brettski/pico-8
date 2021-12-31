@@ -3,7 +3,7 @@ version 34
 __lua__
 --paint a char
 --by brettski
---v2.0
+--v2.1
 
 function _init()
  poke(0x5f2d, 1) --mouse
@@ -55,9 +55,11 @@ function loaderrors()
  text=  "import text must contain\n"
  text..="a 16 char hex string\n\n"
  text..="# how to import:\n\n"
- text..="copy your value\n"
- text..="paste it in to this app\n"
- text..="press 🅾️/c to import it"
+ text..="copy your value (ctrl-c)\n"
+ text..="paste (ctrl-v) it into app\n"
+ text..="press 🅾️/c to import it\n\n"
+ text..="!!you must paste (ctrl-v)\n"
+ text..="  first for import to work!!"
  add(errtext,text)
 end
 -->8
@@ -145,10 +147,10 @@ end
 --48 tall
 function drw_error()
  if inerror>0 then
-  rectfill(2,36,125,96,1)
-  rect(1,35,126,97,8)
-  rect(3,37,124,95,8)
-  print(errtext[inerror],5,39,7)
+  rectfill(2,30,125,102,1)
+  rect(1,29,126,103,8)
+  rect(3,31,124,101,8)
+  print(errtext[inerror],5,33,7)
  end
 end
 -->8
