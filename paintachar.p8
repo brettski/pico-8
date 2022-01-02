@@ -3,7 +3,7 @@ version 34
 __lua__
 --paint a char
 --by brettski
---v2.1
+--v2.2
 
 function _init()
  poke(0x5f2d, 1) --mouse
@@ -60,6 +60,13 @@ function loaderrors()
  text..="press 🅾️/c to import it\n\n"
  text..="!!you must paste (ctrl-v)\n"
  text..="  first for import to work!!"
+ add(errtext,text)
+ text=  "invalid hex value\n\n"
+ text..="the hex string must be:\n"
+ text..="- exactly 16 characters\n"
+ text..="- only have values 0-f\n\n"
+ text..="example:\n"
+ text..="447cb67c3e7f0106"
  add(errtext,text)
 end
 -->8
@@ -139,7 +146,7 @@ function drw_instr()
  inst..="🅾️/c\f9 "..dir
  inst..="\f"..ihc.." "..iotype.." \f"..icx..addv.." clipboard\n"
  inst..="⬅️➡️ change type: hex/binary\n"
- inst..="⬆️⬇️ change io: send/receive"
+ inst..="⬇️⬆️ change io: send/receive"
  line(0,90,127,90,ic)
  print(inst,1,92,ic)
 end
@@ -246,6 +253,10 @@ function importhex(hex)
  local row
  for y=0,7 do
    row=tonum("0x"..hexparts[y+1])
+   if row==nil then
+    inerror=2
+    return
+   end
   for x=0,7 do
    if row & rpos[x+1] > 0 then
     mset(x,y,1)
