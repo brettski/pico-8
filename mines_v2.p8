@@ -1,5 +1,5 @@
 pico-8 cartridge // http://www.pico-8.com
-version 29
+version 34
 __lua__
 --mines 2
 --by brettski
@@ -523,6 +523,7 @@ function doflag()
   fp.state="cvd"
   flgcount+=1
  end
+ _upd=updchk4win
 end
 
 function doselect()
