@@ -35,7 +35,6 @@ function setinitvars()
 	bombcount=0
 	flgcount=0
 	xoff,yoff=0,2 --offset for border
- txoff,tyoff=xoff*8,yoff*8
  cam_x,cam_y=0,0 --camera xy
  cbox_x=dcbox_x --camera box
  cbox_y=dcbox_y
