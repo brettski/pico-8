@@ -3,7 +3,7 @@ version 34
 __lua__
 --paint a char
 --by brettski
---v2.2
+--v2.3
 
 function _init()
  poke(0x5f2d, 1) --mouse
@@ -217,9 +217,9 @@ end
 
 function toclipboard()
  if iotype=="hex" then
-  printh(hchar,"@clip")
+  printh("\^:"..hchar,"@clip")
  else
-  printh(escp_bin_str(bchar),"@clip")
+  printh("\^."..escp_bin_str(bchar),"@clip")
  end
 end
 
