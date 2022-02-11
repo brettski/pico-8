@@ -217,9 +217,9 @@ end
 
 function toclipboard()
  if iotype=="hex" then
-  printh("\^:"..hchar,"@clip")
+  printh("\\^:"..hchar,"@clip")
  else
-  printh("\^."..escp_bin_str(bchar),"@clip")
+  printh("\\^."..escp_bin_str(bchar),"@clip")
  end
 end
 
