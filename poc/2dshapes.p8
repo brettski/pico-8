@@ -10,17 +10,13 @@ r2=4
 function _setup()
 end
 
-function _update()
+function _update60()
 	t+=1
- 	 r=sin((t/175))*10
- 	 r2=cos((t/125))*10
+ 	--r=abs(sin((t/175)))*10
+ 	r=abs(sin(t/250)*6)+4
+ 	r=max(3,r)
+ 	r2=sin((t/250))*10
  	if r<0 then r*=-1 end
-	 --if r<5 then t=0 end
-	  --r=max(r,5)
-	  --r2=max(r,5)
-	 --r=sin((t/125))*10
- 	--r=cos((t/125))*10
-
 end
 
 function _draw()
@@ -36,7 +32,7 @@ function _draw()
 end
 
 function ngon(x, y, r, n, color)
-  line(color)            -- invalidate current endpoint, set color
+  line(color)   -- invalidate current endpoint, set color
   for i=0,n do
     local angle = i/n
     line(x + r*cos(angle), y + r*sin(angle))
