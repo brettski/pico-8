@@ -15,7 +15,7 @@ function _update60()
  	--r=abs(sin((t/175)))*10
  	r=abs(sin(t/250)*6)+4
  	r=max(3,r)
- 	r2=sin((t/250))*10
+ 	r2=pow2(sin((t/300)))*6+4
  	if r<0 then r*=-1 end
 end
 
@@ -37,6 +37,10 @@ function ngon(x, y, r, n, color)
     local angle = i/n
     line(x + r*cos(angle), y + r*sin(angle))
   end
+end
+
+function pow2(v)
+ return v*v
 end
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000

@@ -1,5 +1,5 @@
 pico-8 cartridge // http://www.pico-8.com
-version 33
+version 38
 __lua__
 --pivot pico
 --by brettski
@@ -282,8 +282,10 @@ function add_enemy(_y,_lr,_t)
 		c=et.c,
 		w=et.w,
 		h=et.h,
+		r=et.r or 0,
   colchk=et.colchk,
 		draw=et.draw,
+		update=et.update or nil,
 		y=_y,
 		lr=_lr,
 		t=_t,
@@ -294,6 +296,9 @@ function add_enemy(_y,_lr,_t)
 	  ,-1*enemyspd,enemyspd)
 
 	function e:upd()
+	 if type(e.update)=="function" then
+	  e:update()
+	 end
 	 self.x+=self.mov
 	 if self.x < -50 or self.x > 177 then
 	  del(enemy, self)
@@ -313,7 +318,7 @@ function spawn_enemy()
  if t%200==0 then
   local _t=1
   if (score>10) _t=2
-  if (score>20) _t=rnd({1,2})
+  if (score>20) _t=rnd({1,2,3})
   add_enemy(
   	12+rnd(101),
   	rnd({"l","r"}),
@@ -339,8 +344,6 @@ function ecomealert(_e)
  circ(lx+off,_y-off,0,_e.c)
  circ(lx+off*2,_y+off*2,0,_e.c)
  circ(lx+off*2,_y-off*2,0,_e.c)
-
-
 end
 
 function ecome(_e) 
@@ -379,12 +382,18 @@ end
 
 function colchk_circle(_en)
 -- wip > from pdot
-	 local a=p.x-self.x
-	 local b=p.y-self.y
+	 local a=p.x-_en.x
+	 local b=p.y-_en.y
 	 local d=(a*a)+(b*b)
 	 --for less precision on hit
 	 --sqrt(d)-(p.r+self.r) <=0.1
-	 return sqrt(d) <= p.r+self.r
+	 local offs=1
+	 if _en.n=="hex" then
+	  offs=0.9
+	 end
+	 if sqrt(d) <= p.r+_en.r*offs then
+	  game_over()
+	 end
 end
 
 enemy_types = {
@@ -417,7 +426,25 @@ enemy_types = {
 		 	self.y+self.h,
 		 	self.c)		
  	end,
- }
+ },
+ {
+ 	n="hex",
+ 	c=14,
+ 	w=0,
+ 	h=0,
+  r=6,
+  colchk=colchk_circle,
+  update=function(self)
+   self.r=pow2(sin(t/300))*6+4
+  end,
+ 	draw=function(self)
+ 	 ecome(self)
+   hexagon(self.x,
+    self.y,
+    self.r,
+    self.c)
+ 	end,
+ },
 }
 -->8
 --utils
@@ -472,6 +499,19 @@ function log10(n)
  return log10_table[flr(n)] + e
 end
 -- end log1o
+
+function pow2(_v)
+ return _v*_v
+end
+
+function hexagon(_x,_y,_r,color)
+ line(color) -- invalidate current endpoint, set color
+ for i=0,6 do
+  local angle=i/6
+  line(_x+_r*cos(angle), 
+       _y+_r*sin(angle))
+ end
+end
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
