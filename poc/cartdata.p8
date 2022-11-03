@@ -1,10 +1,16 @@
 pico-8 cartridge // http://www.pico-8.com
-version 18
+version 33
 __lua__
--- learning to make a box
--- to control camera movement
+--cartdata
+--brettski
 
 function _init()
+cartdata("brettski_test_v0")
+--32767
+dset(1,32767)
+val0 = dget(0)
+val1 = dget(1)
+val2 = dget(2)
 
 end
 
@@ -13,7 +19,10 @@ function _update()
 end
 
 function _draw()
-
+cls()
+print(val0)
+print(val1)
+print(val2)
 end
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
