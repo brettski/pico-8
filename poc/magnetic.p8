@@ -6,6 +6,8 @@ __lua__
 
 function _init()
  t=0
+ load_debug()
+ load_globals()
  initplayer()
 end
 
@@ -73,15 +75,21 @@ end
 
 
 -->8
---util
+--pick-ups
 
-function colchk_2cir(_a,_b)
- local a=_a.x-_b.x
- local b=_a.y-_b.y
- local d=(a*a)+(b*b)
- return sqrt(d)<=_a.r+_b.r
+function add_pickup()
+ local pu={
+  x=10+rnd(100),
+  y=20+rnd(20),
+  c=rnd({12,13,14,15}),
+ }
+ function pu:upd()
+ 	--col check
+ 	
+ end
 end
 -->8
+--notes
 --[[
 spawn an 'enemy'
 add regular collision checks
@@ -91,6 +99,32 @@ on collision move 'enemy' closer
  line then we'll curve in
 
 ]]--
+-->8
+--game
+
+function load_globals()
+ 
+ pickups={}
+ enemies={}
+end
+
+function load_debug()
+ debug=true
+ iscollide=false
+end
+
+
+-->8
+--util
+
+function colchk_2cir(_a,_b)
+ local a=_a.x-_b.x
+ local b=_a.y-_b.y
+ local d=(a*a)+(b*b)
+ return sqrt(d)<=_a.r+_b.r
+end
+
+
 __gfx__
 00000000000880000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000cc0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
