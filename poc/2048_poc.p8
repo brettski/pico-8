@@ -3,7 +3,7 @@ version 41
 __lua__
 --main
 function _init()
- setup()
+ startgame()
 end
 
 function _update()
@@ -18,7 +18,7 @@ draw_squares()
 end
 -->8
 --setup
-function setup()
+function startgame()
  field={}
  for i=1,4 do
  	field[i]={}
@@ -27,11 +27,8 @@ function setup()
  	end
  end
  --start w/ 2 squares
- --addnewrfpoint()
- --addnewrfpoint()
- field[1][1]=8
- field[1][2]=2
- field[1][3]=4
+ addnewrfpoint()
+ addnewrfpoint()
 end
 -->8
 --field utils
@@ -228,19 +225,19 @@ function dobutton()
   doleft_move()
   --these here for testing
   --need proper checks
-  --addnewrfpoint()
+  addnewrfpoint()
  elseif btnp(➡️) then
   printh("➡️")
   doright_move()
-  --addnewrfpoint()
+  addnewrfpoint()
  elseif btnp(⬆️) then
   printh("⬆️")
   doup_move()
-  --addnewrfpoint()
+  addnewrfpoint()
  elseif btnp(⬇️) then
   print("⬇️")
   dodown_move()
-  --addnewrfpoint()
+  addnewrfpoint()
  elseif btnp(❎) then
  
  elseif btnp(🅾️) then
