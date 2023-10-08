@@ -3,10 +3,12 @@ version 41
 __lua__
 --main
 function _init()
+ t=-32768
  startgame()
 end
 
 function _update()
+ t+=1
  dobutton()
 end
 
@@ -18,6 +20,7 @@ draw_squares()
 end
 -->8
 --setup
+
 function startgame()
  field={}
  for i=1,4 do
